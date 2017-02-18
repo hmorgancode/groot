@@ -1,9 +1,28 @@
 // Sass!
 
-@import "node_modules/bulma/bulma.sass";
+// @import "node_modules/bulma/bulma.sass";
 
-// @import "node_modules/bulma/sass/utilities/_all";
-// @import "node_modules/bulma/sass/grid/columns";
+@import "node_modules/bulma/sass/utilities/_all";
+@import "node_modules/bulma/sass/elements/box";
+@import "node_modules/bulma/sass/elements/icon";
+@import "node_modules/bulma/sass/elements/image";
+@import "node_modules/bulma/sass/grid/columns";
+@import "node_modules/bulma/sass/components/media";
 
 // @import "node_modules/font-awesome/scss/font-awesome.scss";
-// is this best practice? how do you treat font-awesome?
+// @TODO figure out best way to include your font awesome icons
+
+.plant-list {
+  article.media.box {
+    margin-top: 0rem;
+    margin-bottom: 0rem;
+    padding: 0.5rem;
+
+    .media-left .image {
+      @include desktop() {
+        height: 256px;
+        width: 256px;
+      };
+    }
+  }
+}
