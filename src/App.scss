@@ -6,16 +6,27 @@
 @import "node_modules/bulma/sass/elements/box";
 @import "node_modules/bulma/sass/elements/icon";
 @import "node_modules/bulma/sass/elements/image";
+// @import "node_modules/bulma/sass/elements/progress";
+@import "node_modules/bulma/sass/elements/tag";
 @import "node_modules/bulma/sass/grid/columns";
+@import "node_modules/bulma/sass/components/level";
 @import "node_modules/bulma/sass/components/media";
 
 // @import "node_modules/font-awesome/scss/font-awesome.scss";
 // @TODO figure out best way to include your font awesome icons
 
+body {
+  margin: 0;
+}
+
 .plant-list {
+  background: $grey;
+  padding: 0.5rem;
+
   article.media.box {
-    margin-top: 0rem;
-    margin-bottom: 0rem;
+    background: $grey-lighter;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
     padding: 0.5rem;
 
     .media-left .image {
@@ -23,6 +34,31 @@
         height: 256px;
         width: 256px;
       };
+    }
+
+    .media-content {
+      font-family: Helvetica;
+
+      .tag {
+        float: right; // try full flexbox later
+      }
+
+      .plant-description {
+        font-family: Helvetica;
+        padding-top: 0.5rem;
+      }
+
+      // .level {
+      //   padding-top: 0.5rem;
+      //   padding-bottom: 0.25rem;
+
+      //   .water-column {
+      //     background: $grey-light;
+      //     margin-top: 0.25rem;
+      //     margin-bottom: 0.25rem;
+      //     margin-left: 0.75rem;
+      //   }
+      // }
     }
   }
 }
