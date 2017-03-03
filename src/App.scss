@@ -47,18 +47,18 @@ body {
         font-family: Helvetica;
         padding-top: 0.5rem;
       }
+    }
 
-      // .level {
-      //   padding-top: 0.5rem;
-      //   padding-bottom: 0.25rem;
+    .media-right {
+      margin-left: 0;
+      max-width: 2rem;
 
-      //   .water-column {
-      //     background: $grey-light;
-      //     margin-top: 0.25rem;
-      //     margin-bottom: 0.25rem;
-      //     margin-left: 0.75rem;
-      //   }
-      // }
+      .meter {
+        position-left: -10px;
+        -webkit-transform: rotate(-90deg);
+        -ms-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+      }
     }
   }
 }

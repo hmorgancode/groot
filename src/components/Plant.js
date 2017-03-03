@@ -32,13 +32,12 @@ class Plant extends React.Component {
               <p>{plant.instructions}</p>
             </Truncate>
           </div>
-
-          <nav className="level">
-            <meter className="meter is-info"
-                      value={plant.soilMoisture || plant.waterLevel} max="1">
-              {plant.waterLevel ? 'Water Level' : 'Soil Moisture'}
-            </meter>
-          </nav>
+        </div>
+        <div className="media-right">
+          <meter className="meter"
+                  value={plant.soilMoisture || plant.waterLevel} max="1">
+          {plant.waterLevel ? 'Water Level' : 'Soil Moisture'}
+        </meter>
         </div>
       </article>
     );
