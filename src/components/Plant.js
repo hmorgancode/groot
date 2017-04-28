@@ -1,4 +1,5 @@
 import React from 'react';
+import WaterMeter from './WaterMeter';
 import Truncate from 'react-truncate';
 
 class Plant extends React.Component {
@@ -33,12 +34,8 @@ class Plant extends React.Component {
             </Truncate>
           </div>
 
-          <nav className="level">
-            <meter className="meter is-info"
-                      value={plant.soilMoisture || plant.waterLevel} max="1">
-              {plant.waterLevel ? 'Water Level' : 'Soil Moisture'}
-            </meter>
-          </nav>
+          <WaterMeter plant={plant} />
+
         </div>
       </article>
     );
