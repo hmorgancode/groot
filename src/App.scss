@@ -29,6 +29,9 @@ body {
     margin-bottom: 0.2rem;
     padding: 0.5rem;
 
+    .expanded {
+    }
+
     .media-left .image {
       @include desktop() {
         height: 256px;
@@ -38,14 +41,18 @@ body {
 
     .media-content {
       font-family: Helvetica;
+      // transition: height 0.5s;
 
       .tag {
-        float: right; // try full flexbox later
+        // float: right; // try full flexbox later
+        margin-right: 0.2rem;
+        margin-bottom: 0.2rem;
+        margin-top: 0.2rem;
       }
 
       .plant-description {
         font-family: Helvetica;
-        padding-top: 0.5rem;
+        padding-top: 0.2rem;
       }
 
       // .level {
