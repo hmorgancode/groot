@@ -8,7 +8,9 @@ import './App.css';
 class App extends React.Component {
   render() {
     return (
+      <div className="app">
         <PlantList plants={plants} />
+      </div>
     );
   }
 }

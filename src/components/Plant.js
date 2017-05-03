@@ -22,34 +22,35 @@ class Plant extends React.Component {
     //   standardModeTags = plant.tags.map((tag) => <span key={tag} className="tag is-success">{tag}</span>);
     // }
     return (
-      <article key={plant.id} className="media box {this.state.expanded && 'expanded'}" onClick={this.expandBox.bind(this)}>
+      <article key={plant.id} className="media box" onClick={this.expandBox.bind(this)}>
         <div className="media-left">
           <img className="image is-64x64" src={plant.thumbnail} alt={plant.name}></img>
         </div>
-        <div className="media-content">
-          <strong>{plant.name}</strong>
-          <br />
 
-          <div>
-            <small>{`(${plant.altName})`}</small>
-            <br />
+        <div className={`media-content ${this.state.expanded ? 'expanded' : ''}`}>
+          <div className="core-content">
+            <div>
+              <strong>{plant.name}</strong>
+              <br />
+              <small>{`(${plant.altName})`}</small>
+              <br />
+            </div>
+            <WaterMeter plant={plant} />
           </div>
-          <WaterMeter plant={plant} />
 
-          { this.state.expanded && plant.tags.length > 0 && plant.tags.map((tag) => <span key={tag} className="tag is-success">{tag}</span>) }
-          { this.state.expanded && plant.tags.length > 0 && <br />}
+          <div className={`expandable-content ${this.state.expanded ? 'expanded' : ''}`}>
+            { plant.tags.length > 0 && plant.tags.map((tag) => <span key={tag} className="tag is-success">{tag}</span>) }
+            { plant.tags.length > 0 && <br />}
+            {/* Just cut off any instruction set that gets too long. */}
 
-          {/* Just cut off any instruction set that gets too long. */}
-          { this.state.expanded &&
             <div className="plant-description">
               <Truncate lines={4} ellipsis={''}>
                 <p>{plant.instructions}</p>
               </Truncate>
             </div>
-          }
-
-
+          </div>
         </div>
+
       </article>
     );
   }

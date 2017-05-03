@@ -19,53 +19,80 @@ body {
   margin: 0;
 }
 
+.app {
+  max-width: 800px;
+  margin: auto;
+}
+
 .plant-list {
   background: $grey;
   padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
 
   article.media.box {
     background: $grey-lighter;
     margin-top: 0.2rem;
     margin-bottom: 0.2rem;
     padding: 0.5rem;
-
-    .expanded {
-    }
+    transition: flex-grow 0.5s;
 
     .media-left .image {
       @include desktop() {
-        height: 256px;
-        width: 256px;
+        height: 128px;
+        width: 128px;
       };
     }
 
     .media-content {
       font-family: Helvetica;
-      // transition: height 0.5s;
+      transition: min-height 0.5s;
+      min-height: 0px;
 
-      .tag {
-        // float: right; // try full flexbox later
-        margin-right: 0.2rem;
-        margin-bottom: 0.2rem;
-        margin-top: 0.2rem;
+      .core-content {
+        display: flex;
+        justify-content: space-between;
+        .water-meter {
+          background: $grey-light;
+          flex-basis: 60px;
+        }
       }
 
-      .plant-description {
-        font-family: Helvetica;
-        padding-top: 0.2rem;
+      .expandable-content {
+        height: 0;
+        overflow: hidden;
+        // visibility: none;
+        // transition: visibility 0.5s;
+        // transition-delay: visibility 0.5s, display 0.5s;
+        transition: height 1s ease-out;
+        // transition-delay: max-height 2s;
+
+        &.expanded {
+          height: auto; // arbitrary- higher than any plant should get
+          // visibility: visible;
+          // transition: max-height 0.5s ease-out 0.1s;
+          // transition-delay: max-height 2s; //, display 0.5s;
+          // .expanded-content {
+          //   transition: visibility 0.5s;
+          //   transition-delay: visibility 0.5s, display 0.5s;
+          //   visibility: visible;
+          //   display: inline;
+          //   transition-delay: visibility 0.5s, display 0.5s;
+          // }
+        }
+
+        .tag {
+          margin-right: 0.2rem;
+          margin-bottom: 0.2rem;
+          margin-top: 0.2rem;
+        }
+        .plant-description {
+          font-family: Helvetica;
+          padding-top: 0.2rem;
+        }
       }
 
-      // .level {
-      //   padding-top: 0.5rem;
-      //   padding-bottom: 0.25rem;
 
-      //   .water-column {
-      //     background: $grey-light;
-      //     margin-top: 0.25rem;
-      //     margin-bottom: 0.25rem;
-      //     margin-left: 0.75rem;
-      //   }
-      // }
     }
   }
 }
