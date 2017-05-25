@@ -1,5 +1,6 @@
 import React from 'react';
-import Plant from './Plant'
+import Plant from './Plant';
+import PropTypes from 'prop-types';
 
 class PlantList extends React.Component {
   render() {
@@ -10,5 +11,9 @@ class PlantList extends React.Component {
     );
   }
 }
+
+PlantList.propTypes = {
+  plants: PropTypes.arrayOf(PropTypes.object).isRequired
+};
 
 export default PlantList;

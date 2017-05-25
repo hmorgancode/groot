@@ -59,16 +59,16 @@ body {
       }
 
       .expandable-content {
-        height: 0;
-        overflow: hidden;
+        // height: 0;
+        // overflow: hidden;
         // visibility: none;
         // transition: visibility 0.5s;
         // transition-delay: visibility 0.5s, display 0.5s;
-        transition: height 1s ease-out;
+        // transition: height 1s ease-out;
         // transition-delay: max-height 2s;
 
         &.expanded {
-          height: auto; // arbitrary- higher than any plant should get
+          // height: auto; // arbitrary- higher than any plant should get
           // visibility: visible;
           // transition: max-height 0.5s ease-out 0.1s;
           // transition-delay: max-height 2s; //, display 0.5s;
