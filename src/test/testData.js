@@ -15,14 +15,11 @@ for (let i = 1; i < 4; ++i) {
   genericTestThumbnails.push(`${process.env.PUBLIC_URL}/testimg/test${i}.jpg`);
 }
 
-const GENERIC_TAGS = ['Carnivorous', 'Humidity-Sensitive', 'Succulent', 'Annual', 'Invasive'];
+const GENERIC_TAGS = ['Hallway', 'Kitchen', 'My Room', `X's Room`, 'Bathroom'];
 function getRandomTags() {
   let randomTags = [];
-  const MAX_TAGS = 2;
+  const MAX_TAGS = 1;
   for (let i = 0; i < MAX_TAGS; ++i) {
-    if (Math.random() < .33) {
-      break;
-    }
     const newTag = GENERIC_TAGS[randomValidIndex(GENERIC_TAGS.length)];
     if (!randomTags.find((tag) => tag === newTag)) {
       randomTags.push(newTag);
@@ -39,7 +36,7 @@ export const plants = [
     name: 'Drosera Venusta',
     altName: 'Elegant Sundew',
     thumbnail: 'http://cdn3.volusion.com/x9tky.hjnm9/v/vspfiles/photos/DRO-VEN-2T.jpg',
-    tags: ['Carnivorous'],
+    tags: ['Hallway'],
     instructions: 'Fill its tray up to 1cm. Then chuck a plant treat at it!',
     vitality: 'Average',
     waterLevel: 0, // in cm
@@ -50,7 +47,7 @@ export const plants = [
     name: 'Nepenthes Campanulata',
     altName: 'Bell-Shaped Pitcher Plant',
     thumbnail: 'http://cdn3.volusion.com/x9tky.hjnm9/v/vspfiles/photos/NEP-CAM-2T.jpg',
-    tags: ['Carnivorous', 'Humidity-Sensitive'],
+    tags: ['Hallway', 'Humidity-Sensitive'],
     instructions: `Keep soil damp, but do not leave it sitting in water. Mist lightly if possible, and refill humidifier in winter- this lil' guy is humidity-sensitive.`,
     vitality: 'Sensitive',
     notes: `Probably lacks pitchers. (This one's going to a nice humid terrarium once it's settled.)`,
@@ -62,7 +59,7 @@ export const plants = [
     name: 'Spider Plant',
     altName: 'Spider Plant',
     thumbnail: 'https://maxpull-gdvuch3veo.netdna-ssl.com/wp-content/uploads/2016/05/spider-plant-fertilizer.jpg',
-    tags: [],
+    tags: ['Kitchen'],
     instructions: 'Water it a bit? (This thing is really hard to kill, so do whatever.)',
     vitality: 'Vigorous',
     soilMoisture: 0.1,

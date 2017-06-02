@@ -58,6 +58,16 @@ body {
         }
       }
 
+      .tag {
+        margin-right: 0.2rem;
+        margin-bottom: 0.2rem;
+        margin-top: 0.2rem;
+      }
+      .plant-description {
+        font-family: Helvetica;
+        padding-top: 0.2rem;
+      }
+
       .expandable-content {
         // height: 0;
         // overflow: hidden;
@@ -81,18 +91,21 @@ body {
           // }
         }
 
-        .tag {
-          margin-right: 0.2rem;
-          margin-bottom: 0.2rem;
-          margin-top: 0.2rem;
-        }
-        .plant-description {
-          font-family: Helvetica;
-          padding-top: 0.2rem;
-        }
+
       }
 
 
+    }
+
+    .media-right {
+      position: relative;
+
+      .level-meter-image {
+        overflow: hidden;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
     }
   }
 }
