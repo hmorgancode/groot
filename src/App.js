@@ -9,10 +9,34 @@ class App extends React.Component {
   render() {
     return (
       <div className="app">
-        <PlantList plants={plants} />
+        <div className="nav-bar tabs is-toggle is-fullwidth">
+          <ul>
+            <a>
+              <li className="is-active">
+                <span>One</span>
+              </li>
+            </a>
+            <a>
+              <li>
+                <span>Two</span>
+              </li>
+            </a>
+            <a>
+              <li>
+                <span>Three</span>
+              </li>
+            </a>
+            <a>
+              <li>
+                <span>Four</span>
+              </li>
+            </a>
+          </ul>
+        </div>
       </div>
     );
   }
 }
+        // <PlantList plants={plants} />
 
 export default App;

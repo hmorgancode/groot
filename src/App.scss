@@ -11,6 +11,7 @@
 @import "node_modules/bulma/sass/grid/columns";
 @import "node_modules/bulma/sass/components/level";
 @import "node_modules/bulma/sass/components/media";
+@import "node_modules/bulma/sass/components/tabs";
 
 // @import "node_modules/font-awesome/scss/font-awesome.scss";
 // @TODO figure out best way to include your font awesome icons
@@ -21,7 +22,11 @@ body {
 
 .app {
   max-width: 800px;
-  margin: auto;
+  // margin: auto;
+}
+
+.nav-bar {
+
 }
 
 .plant-list {
@@ -35,7 +40,7 @@ body {
     margin-top: 0.2rem;
     margin-bottom: 0.2rem;
     padding: 0.5rem;
-    transition: flex-grow 0.5s;
+    // transition: flex-grow 0.5s;
 
     .media-left .image {
       @include desktop() {
