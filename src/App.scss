@@ -13,7 +13,9 @@
 @import "node_modules/bulma/sass/components/media";
 @import "node_modules/bulma/sass/components/tabs";
 
-// @import "node_modules/font-awesome/scss/font-awesome.scss";
+
+// import '../node_modules/font-awesome/scss/font-awesome.scss';
+@import "node_modules/font-awesome/scss/font-awesome.scss";
 // @TODO figure out best way to include your font awesome icons
 
 body {
@@ -21,12 +23,27 @@ body {
 }
 
 .app {
-  max-width: 800px;
-  // margin: auto;
+  max-width: 980px; // beginning of Bulma's "desktop" threshold
 }
 
-.nav-bar {
+#nav-bar {
+  ul {
+    padding: 0;
+    margin: 0;
+    height: 10vh;
+    a {
+      // Duplicated here as a shortcut; setting just the ul height leaves
+      // the buttons at default (~5vh) height, but setting just the buttons'
+      // height causes the page to be ~103vh tall.
+      height: 10vh
+    }
+  }
 
+}
+
+#content {
+  overflow-y: scroll;
+  height: 90vh;
 }
 
 .plant-list {
