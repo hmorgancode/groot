@@ -1,19 +1,49 @@
 import React from 'react';
+import { gql, graphql } from 'react-apollo';
 import Plant from './Plant';
-import PropTypes from 'prop-types';
+// import PropTypes from 'prop-types';
+
 
 class PlantList extends React.Component {
   render() {
+    if (this.props.data.error) {
+      return <p>{this.props.data.error}</p>;
+    }
+    if (this.props.data.loading) {
+      return <p>Loading...</p>;
+    }
     return (
-      <div className="plant-list">
-        { this.props.plants.map((plant) => <Plant key={plant.id} plant={plant} />) }
+      <div className="list">
+        { this.props.data.plants.map((plant) => <Plant key={plant._id} {...plant} />) }
       </div>
     );
   }
 }
 
-PlantList.propTypes = {
-  plants: PropTypes.arrayOf(PropTypes.object).isRequired
-};
+// PlantList.propTypes = {
+  // plants: PropTypes.arrayOf(PropTypes.object)
+// };
 
-export default PlantList;
+const plantListQuery = gql`
+  query PlantListQuery {
+    plants {
+      _id
+      name
+      altName
+      thumbnail
+      tags
+      notes
+      board {
+        location
+      }
+      sensors {
+        type
+        # data
+      }
+    }
+  }
+`;
+
+const PlantListWithData = graphql(plantListQuery)(PlantList);
+
+export default PlantListWithData;

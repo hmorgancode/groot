@@ -1,10 +1,18 @@
 import React from 'react';
+import AddPlantForm from './AddPlantForm';
+// import ReactModal from 'react-modal';
+// ReactModal.setAppElement('#i-am-root');
 
 class NavBar extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { activeTab: 'Plants' };
+    this.state = {
+      activeTab: 'Plants',
+      showModal: false
+    };
     this.changeTab = this.changeTab.bind(this);
+    this.handleOpenModal = this.handleOpenModal.bind(this);
+    this.handleCloseModal = this.handleCloseModal.bind(this);
   }
 
   /**
@@ -16,6 +24,13 @@ class NavBar extends React.Component {
     if (this.state.activeTab !== tabName) {
       this.setState({ activeTab: tabName });
     }
+  }
+
+  handleOpenModal() {
+    this.setState({ showModal: true });
+  }
+  handleCloseModal() {
+    this.setState({ showModal: false });
   }
 
   render() {
@@ -34,13 +49,24 @@ class NavBar extends React.Component {
               <span>Sensors</span>
             </a>
           </li>
-          <li onClick={() => this.changeTab('Add/Remove')} className={ this.state.activeTab === 'Add/Remove' && 'is-active'}>
+          <li onClick={ this.handleOpenModal } className={ this.state.activeTab === 'Add/Remove' && 'is-active'}>
             <a>
               <span className="icon"><i className="fa fa-cogs"></i></span>
               <span>Add/Remove</span>
             </a>
           </li>
         </ul>
+
+        <ReactModal
+          isOpen={ this.state.showModal }
+          onAfterOpen={ this.afterOpenModal }
+          contentLabel="Add Plant Window"
+          onRequestClose={ this.handleCloseModal }
+          className="Modal"
+          overlayClassName="Overlay"
+        >
+          <AddPlantForm handleCloseModal={this.handleCloseModal} />
+        </ReactModal>
       </div>
     );
   }

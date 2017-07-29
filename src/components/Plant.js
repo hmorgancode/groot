@@ -1,4 +1,5 @@
 import React from 'react';
+// import { gql, graphql } from 'react-apollo';
 import WaterLevelMeter from './WaterLevelMeter';
 import Truncate from 'react-truncate';
 import { Collapse } from 'react-collapse';
@@ -7,44 +8,40 @@ import PropTypes from 'prop-types';
 class Plant extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {expanded: false};
+    this.state = { expanded: false };
   }
 
   expandBox() {
-    this.setState({expanded: !this.state.expanded});
+    this.setState({ expanded: !this.state.expanded });
   }
 
   render() {
-    const plant = this.props.plant;
-    // Move this to a Tag component and pass tags and guideMode
-    // let guideModeTags = '', standardModeTags = '';
-    // if (this.props.guideMode) {
-    //   guideModeTags = plant.tags.map((tag) => <span key={tag} className="tag is-success">{tag}</span>);
-    // } else {
-    //   standardModeTags = plant.tags.map((tag) => <span key={tag} className="tag is-success">{tag}</span>);
-    // }
     return (
-      <article key={plant.id} className="media box" onClick={this.expandBox.bind(this)}>
+      <article key={ this.props._id } className="media box" onClick={ this.expandBox.bind(this) }>
         <div className="media-left">
-          <img className="image is-64x64" src={plant.thumbnail} alt={plant.name}></img>
+          <img
+            className="image is-64x64"
+            src={ this.props.thumbnail || `${process.env.PUBLIC_URL}/dros.jpg` }
+            alt={ this.props.name }>
+          </img>
         </div>
 
         <div className={'media-content'}>
           <div className="core-content">
             <div>
-              <strong>{plant.name}</strong>
+              <strong>{ this.props.name }</strong>
               <br />
-              <small>{`(${plant.altName})`}</small>
+              { this.props.altName && <small>{`(${ this.props.altName })`}</small> }
               <br />
-              {  plant.tags.length > 0 && plant.tags.map((tag) => <span key={tag} className="tag is-success">{tag}</span>)  }
-              {  plant.tags.length > 0 && <br />  }
+              { this.props.tags.length > 0 && this.props.tags.map((tag) => <span key={tag} className="tag is-success">{tag}</span>) }
+              { this.props.tags.length > 0 && <br /> }
             </div>
           </div>
-          <Collapse isOpened={this.state.expanded}>
+          <Collapse isOpened={ this.state.expanded }>
             { /* For now- just cut off any instruction set that gets too long. */ }
             <div className="plant-description">
               <Truncate lines={4} ellipsis={''}>
-                <p>{plant.instructions}</p>
+                <p>{ this.props.notes }</p>
               </Truncate>
             </div>
           </Collapse>
@@ -62,14 +59,14 @@ class Plant extends React.Component {
 }
 
 Plant.propTypes = {
-  plant: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    altName: PropTypes.string,
-    thumbnail: PropTypes.string.isRequired,
-    tags: PropTypes.arrayOf(PropTypes.string),
-    instructions: PropTypes.string
-  })
+  _id: PropTypes.string,
+  name: PropTypes.string,
+  thumbnail: PropTypes.string,
+  board: PropTypes.object,
+  altName: PropTypes.string,
+  tags: PropTypes.arrayOf(PropTypes.string),
+  notes: PropTypes.string,
+  sensors: PropTypes.array
 };
 
 export default Plant;
