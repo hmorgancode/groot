@@ -1,5 +1,6 @@
 import React from 'react';
 import { gql, graphql } from 'react-apollo';
+// import { connect } from 'react-redux';
 import Plant from './Plant';
 // import PropTypes from 'prop-types';
 
@@ -45,5 +46,9 @@ const plantListQuery = gql`
 `;
 
 const PlantListWithData = graphql(plantListQuery)(PlantList);
+
+// const PlantListWithDataAndState = connect(
+//   (state) => ({ modalIsActive: state.modal.isActive })
+// )(PlantListWithData);
 
 export default PlantListWithData;

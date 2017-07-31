@@ -1,5 +1,6 @@
 import React from 'react';
 import NavBar from './components/NavBar';
+import ModalConductor from './components/ModalConductor';
 import PlantList from './components/PlantList';
 // import AddPlantForm from './components/AddPlantForm';
 // import BoardList from './components/BoardList';
@@ -14,6 +15,7 @@ class App extends React.Component {
           <PlantList />
         </div>
         <NavBar />
+        <ModalConductor />
       </div>
     );
   }

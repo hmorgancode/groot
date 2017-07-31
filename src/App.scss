@@ -43,6 +43,10 @@ body {
     }
   }
 
+  // When we add a modal, the nav-bar is no longer the last item
+  // in the DOM. Force the bottom margin to 0 to prevent Bulma from
+  // adding one (and creating a weird scroll-space) when this happens.
+  margin-bottom: 0;
 }
 
 #content {
@@ -138,11 +142,9 @@ body {
 
 .add-plant-form {
   padding: 1rem;
-  // display: flex;
-  // flex-direction: column;
+
   .input {
     box-sizing: border-box;
-    // width: 80%
   }
   .textarea {
     box-sizing: border-box;
@@ -153,32 +155,42 @@ body {
     z-index: -1;
     position: absolute;
   }
+}
 
-  .form-body {
-    overflow: scroll;
-    max-height: 90%;
+
+
+.modal {
+  .modal-card-head {
+    padding-top: 0px;
+    padding-bottom: 0px;
   }
-  .form-footer {
+  .modal-card-foot {
+    padding-top: 0px;
+    padding-bottom: 0px;
+    justify-content: flex-end;
+  }
 
+  .modal-background {
+    // background-color: rgba(10, 10, 10. 0.7);
   }
 }
 
-.Modal {
-  // display: flex;
-  position: absolute;
-  top: 40px;
-  left: 40px;
-  bottom: 40px;
-  right: 40px;
-  background-color: $grey;
-}
+// .Modal {
+//   // display: flex;
+//   position: absolute;
+//   top: 40px;
+//   left: 40px;
+//   bottom: 40px;
+//   right: 40px;
+//   background-color: $grey;
+// }
 
-.Overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba($grey-lighter, 0.5);
-  z-index: 2;
-}
+// .Overlay {
+//   position: fixed;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   background-color: rgba($grey-lighter, 0.5);
+//   z-index: 2;
+// }

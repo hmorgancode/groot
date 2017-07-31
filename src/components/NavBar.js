@@ -1,5 +1,7 @@
 import React from 'react';
-import AddPlantForm from './AddPlantForm';
+import { connect } from 'react-redux';
+import { openModal } from '../redux/actionTypes';
+// import AddPlantForm from './AddPlantForm';
 // import ReactModal from 'react-modal';
 // ReactModal.setAppElement('#i-am-root');
 
@@ -8,11 +10,11 @@ class NavBar extends React.Component {
     super(props);
     this.state = {
       activeTab: 'Plants',
-      showModal: false
+      // showModal: false
     };
     this.changeTab = this.changeTab.bind(this);
-    this.handleOpenModal = this.handleOpenModal.bind(this);
-    this.handleCloseModal = this.handleCloseModal.bind(this);
+    // this.handleOpenModal = this.handleOpenModal.bind(this);
+    // this.handleCloseModal = this.handleCloseModal.bind(this);
   }
 
   /**
@@ -26,12 +28,12 @@ class NavBar extends React.Component {
     }
   }
 
-  handleOpenModal() {
-    this.setState({ showModal: true });
-  }
-  handleCloseModal() {
-    this.setState({ showModal: false });
-  }
+  // handleOpenModal() {
+  //   this.setState({ showModal: true });
+  // }
+  // handleCloseModal() {
+  //   this.setState({ showModal: false });
+  // }
 
   render() {
     return (
@@ -49,7 +51,7 @@ class NavBar extends React.Component {
               <span>Sensors</span>
             </a>
           </li>
-          <li onClick={ this.handleOpenModal } className={ this.state.activeTab === 'Add/Remove' && 'is-active'}>
+          <li onClick={ () => this.props.handleOpenModal('ADD_PLANT') } className={ this.state.activeTab === 'Add/Remove' && 'is-active'}>
             <a>
               <span className="icon"><i className="fa fa-cogs"></i></span>
               <span>Add/Remove</span>
@@ -57,7 +59,7 @@ class NavBar extends React.Component {
           </li>
         </ul>
 
-        <ReactModal
+        {/*<ReactModal
           isOpen={ this.state.showModal }
           onAfterOpen={ this.afterOpenModal }
           contentLabel="Add Plant Window"
@@ -66,10 +68,19 @@ class NavBar extends React.Component {
           overlayClassName="Overlay"
         >
           <AddPlantForm handleCloseModal={this.handleCloseModal} />
-        </ReactModal>
+        </ReactModal>*/}
       </div>
     );
   }
 }
 
-export default NavBar;
+const NavBarWithState = connect(
+  null, // nav bar doesn't use store data right now
+  (dispatch) => ({
+    handleOpenModal(modalType) {
+      dispatch(openModal(modalType));
+    }
+  })
+)(NavBar);
+
+export default NavBarWithState;
