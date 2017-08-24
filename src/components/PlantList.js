@@ -5,20 +5,18 @@ import Plant from './Plant';
 // import PropTypes from 'prop-types';
 
 
-class PlantList extends React.Component {
-  render() {
-    if (this.props.data.error) {
-      return <p>{this.props.data.error}</p>;
-    }
-    if (this.props.data.loading) {
-      return <p>Loading...</p>;
-    }
-    return (
-      <div className="list">
-        { this.props.data.plants.map((plant) => <Plant key={plant._id} {...plant} />) }
-      </div>
-    );
+function PlantList({ data: { error, loading, plants } }) {
+  if (error) {
+    return <p>{error}</p>;
   }
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+  return (
+    <div className="list">
+      { plants.map((plant) => <Plant key={plant._id} {...plant} />) }
+    </div>
+  );
 }
 
 // PlantList.propTypes = {

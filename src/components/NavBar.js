@@ -6,27 +6,25 @@ import { openModal } from '../redux/actionTypes';
 // ReactModal.setAppElement('#i-am-root');
 
 class NavBar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeTab: 'Plants',
-      // showModal: false
-    };
-    this.changeTab = this.changeTab.bind(this);
-    // this.handleOpenModal = this.handleOpenModal.bind(this);
-    // this.handleCloseModal = this.handleCloseModal.bind(this);
-  }
+
+  state = {
+    activeTab: 'Plants'
+  };
 
   /**
    * Changes the currently active tab to the one selected.
    * @param  {string} tabName The name of the tab. Right now these
    *                          are just self-documented in render().
    */
-  changeTab(tabName) {
+  changeTab = (tabName) => {
     if (this.state.activeTab !== tabName) {
       this.setState({ activeTab: tabName });
     }
-  }
+  };
+
+  isActiveTab = (tabName) => {
+    return tabName === this.state.activeTab ? 'is-active' : '';
+  };
 
   // handleOpenModal() {
   //   this.setState({ showModal: true });
@@ -36,22 +34,24 @@ class NavBar extends React.Component {
   // }
 
   render() {
+
+
     return (
       <div id="nav-bar" className="tabs is-toggle is-fullwidth">
         <ul>
-          <li onClick={() => this.changeTab('Plants')} className={this.state.activeTab === 'Plants' && 'is-active'}>
+          <li onClick={() => this.changeTab('Plants')} className={this.isActiveTab('Plants')}>
             <a>
               <span className="icon"><i className="fa fa-pagelines"></i></span>
               <span>Plants</span>
             </a>
           </li>
-          <li onClick={() => this.changeTab('Sensors')} className={ this.state.activeTab === 'Sensors' && 'is-active'}>
+          <li onClick={() => this.changeTab('Sensors')} className={this.isActiveTab('Sensors')}>
             <a>
               <span className="icon"><i className="fa fa-bolt"></i></span>
               <span>Sensors</span>
             </a>
           </li>
-          <li onClick={ () => this.props.handleOpenModal('ADD_PLANT') } className={ this.state.activeTab === 'Add/Remove' && 'is-active'}>
+          <li onClick={ () => this.props.handleOpenModal('ADD_PLANT') } className={this.isActiveTab('Add/Remove')}>
             <a>
               <span className="icon"><i className="fa fa-cogs"></i></span>
               <span>Add/Remove</span>

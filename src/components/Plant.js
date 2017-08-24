@@ -6,10 +6,10 @@ import { Collapse } from 'react-collapse';
 import PropTypes from 'prop-types';
 
 class Plant extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { expanded: false };
-  }
+
+  state = {
+    expanded: false
+  };
 
   expandBox() {
     this.setState({ expanded: !this.state.expanded });
