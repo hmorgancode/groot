@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo';
-import { modalReducer, addPlantModalReducer } from './redux/reducers';
+import { modalReducer } from './redux/reducers';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import App from './App';
 import './index.css';
@@ -17,7 +17,6 @@ const client = new ApolloClient({
 const store = createStore(
   combineReducers({
     modal: modalReducer,
-    addPlantModal: addPlantModalReducer,
     apollo: client.reducer()
   }),
   {}, // initial state (empty because instead, we define in reducers)

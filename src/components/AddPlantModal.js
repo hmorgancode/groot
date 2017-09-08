@@ -1,66 +1,59 @@
 import React from 'react';
 import { gql, graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
-import { closeModal,
-         selectBoard,
-         selectImage,
-         uploadImageRequest,
-         uploadImageSuccess,
-         uploadImageFailure,
-         deleteImageRequest,
-         deleteImageSuccess,
-         deleteImageFailure
-       } from '../redux/actionTypes'
+import closeModal from '../redux/actionTypes'
 import axios from 'axios';
 
 class AddPlantModal extends React.Component {
-  constructor(props) {
-    super(props);
 
-    this.handleSelectImage = this.handleSelectImage.bind(this);
-  }
+  state = {
+    requestInProgress: false,
+    name: '',
+    altName: '',
+    imageData: null,
+    imageName: '',
+    notes: '',
 
-  // Consider a more durable way to handle this later
-  // Currently, just upload something when someone selects an image.
-  // If they change it, delete the old image upload and upload the new one.
-  async handleSelectImage(e) {
-    e.stopPropagation();
-    if (this.props.form.selectedImageName === e.target.files[0].name) {
+    selectedBoardIndex: -1,
+    selectedSensors: {}
+  };
+
+  // Upload the image, then make a put request for the new plant.
+  handleFormSubmit = async (e) => {
+    // Verify form input
+
+
+    this.setState({ requestInProgress: true });
+    // Upload the image and store the result.
+    let uploadedImageName;
+    try {
+      const res = await axios.post('http://localhost:3000/image_upload', this.state.imageData);
+      uploadedImageName = res.data;
+    } catch (error) {
+      this.setState({ error });
+      console.error('An error occurred while uploading the thumbnail image.');
       return;
     }
-    this.props.handleSelectImage(e.target.files[0].name);
 
-    // Keep this data here so the event can go back to pool.
+    // Create plant
+    console.log(uploadedImageName);
+
+  }
+
+  handleSelectImage = (e) => {
+    e.stopPropagation();
     let data = new FormData();
     data.append('thumbnail', e.target.files[0]);
-
-    // delete the last image we uploaded
-    if (this.props.form.uploadedImageName != null) {
-      try {
-        this.props.handleDeleteImageRequest();
-        await axios.post('http://localhost:3000/image_delete', { imageName: this.props.form.uploadedImageName });
-        this.props.handleDeleteImageSuccess();
-      } catch (err) {
-        this.props.handleDeleteImageFailure(err);
-        return;
-      }
-    }
-
-    // Upload the image and store the result.
-    try {
-      this.props.handleUploadImageRequest();
-      const res = await axios.post('http://localhost:3000/image_upload', data);
-      this.props.handleUploadImageSuccess(res.data);
-    } catch (err) {
-      this.props.handleUploadImageFailure(err);
-      this.props.handleSelectImage('');
-    }
+    this.setState({
+      imageName: e.target.files[0].name,
+      imageData: data
+    });
   }
 
   render() {
     return (
-      <div className={'modal ' + (this.props.isActive ? 'is-active ' : '')}>
-      <div className="modal-background" onClick={this.props.handleCloseModal}></div>
+      <div className={'modal is-active'}>
+      <div className="modal-background" onClick={ this.props.handleCloseModal }></div>
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Add Plant</p>
@@ -69,12 +62,16 @@ class AddPlantModal extends React.Component {
         <div className="modal-card-body add-plant-form form-body">
           <div className="control">
             <label className="label">Name</label>
-            <input required type="text" className="input" placeholder="Name"/>
+            <input required type="text" className="input"
+                   placeholder="Name" value={ this.state.name }
+                   onChange={ (e) => { this.setState({ name: e.target.value }) } } />
           </div>
 
           <div className="control">
             <label className="label">Alternate Name</label>
-            <input type="text" className="input" placeholder="Latin, etc..."/>
+            <input type="text" className="input"
+                   placeholder="Latin, etc..." value={ this.state.altName }
+                   onChange={ (e) => { this.setState({ altName: e.target.value }) } } />
           </div>
 
           <div className="control">
@@ -82,10 +79,9 @@ class AddPlantModal extends React.Component {
             <label htmlFor="add-plant-image" className="button is-info label">
               <p className="fa fa-picture-o"></p>
             </label>
-            { !this.props.form.isFetching &&
+            { !this.state.requestInProgress &&
               <input id="add-plant-image" accept="image/*" className="file-input" type="file"
-                     /* value={this.props.form.selectedImageName} */
-                     onChange={this.handleSelectImage}/>
+                     onChange={ this.handleSelectImage }/>
             }
           </div>
 
@@ -99,19 +95,23 @@ class AddPlantModal extends React.Component {
 
           <div className="control">
             <label className="label">Notes</label>
-            <textarea className="textarea"/>
+            <textarea className="textarea" value={ this.state.notes }
+                      onChange={ (e) => { this.setState({ notes: e.target.value }) } } />
           </div>
 
 
           <div className="control">
             <label className="label">Board</label>
             <div className="select">
-              <select onChange={(e) => { this.props.handleSelectBoard(Number(e.target.value)) } }>
-                <option value="-1">Select a board:</option>
+              <select onChange={(e) => { this.setState({
+                selectedBoardIndex: Number(e.target.value),
+                selectedSensors: {}
+              }) } }>
+                <option value={ this.state.selectedBoardIndex }>Select a board:</option>
                 {
                   this.props.data.boards &&
                   this.props.data.boards.map((board, index) => {
-                    return <option key={board._id} value={index}>{board.location}</option>
+                    return <option key={ board._id } value={ index }>{ board.location }</option>
                   })
                 }
               </select>
@@ -122,12 +122,16 @@ class AddPlantModal extends React.Component {
           <div className="control">
             <label className="label">Sensors</label>
               {
-                this.props.form.selectedBoardIndex < 0 ? <p>[select a board]</p> :
-                this.props.data.boards[this.props.form.selectedBoardIndex].sensors.map((sensor) => {
-                  return <div className="control" key={sensor._id}>
+                this.state.selectedBoardIndex < 0 ? <p>[select a board]</p> :
+                this.props.data.boards[this.state.selectedBoardIndex].sensors.map((sensor) => {
+                  return <div className="control" key={ sensor._id }>
                            <label className="checkbox">
-                             <input type="checkbox" value={sensor._id} />
-                             {`${sensor.type} - Pin ${sensor.dataPin}`}
+                             <input type="checkbox" value={ sensor._id }
+                                    checked={ this.state.selectedSensors[sensor._id] || false }
+                                    onChange={ (e) => { this.setState({
+                                      selectedSensors: { ...this.state.selectedSensors, [sensor._id]: e.target.checked }
+                                    }) } } />
+                             { `${sensor.type} - Pin ${sensor.dataPin}` }
                            </label>
                          </div>
                 })
@@ -138,7 +142,7 @@ class AddPlantModal extends React.Component {
         <div className="modal-card-foot">
           <div className="control is-grouped">
             <p className="control">
-              <button className="button is-primary" onClick={() => console.log('BUTTON!')}>Submit</button>
+              <button className="button is-primary" onClick={this.handleFormSubmit}>Submit</button>
             </p>
             <p className="control">
               <button className="button" onClick={this.props.handleCloseModal}>Cancel</button>
@@ -198,36 +202,11 @@ export default compose(
   graphql(addPlantMutation),
   connect(
     (state) => ({
-      isActive: state.modal.isActive,
-      form: state.addPlantModal
+      isActive: state.modal.isActive
     }),
     (dispatch) => ({
       handleCloseModal() {
         dispatch(closeModal());
-      },
-      handleSelectBoard(selectedBoardIndex) {
-        dispatch(selectBoard(selectedBoardIndex));
-      },
-      handleSelectImage(selectedImage) {
-        dispatch(selectImage(selectedImage));
-      },
-      handleUploadImageRequest() {
-        dispatch(uploadImageRequest());
-      },
-      handleUploadImageSuccess(name) {
-        dispatch(uploadImageSuccess(name));
-      },
-      handleUploadImageFailure(error) {
-        dispatch(uploadImageFailure(error));
-      },
-      handleDeleteImageRequest() {
-        dispatch(deleteImageRequest());
-      },
-      handleDeleteImageSuccess() {
-        dispatch(deleteImageSuccess());
-      },
-      handleDeleteImageFailure(error) {
-        dispatch(deleteImageFailure(error));
       }
     })
   )
