@@ -37,6 +37,33 @@ class AddPlantModal extends React.Component {
 
     // Create plant
     console.log(uploadedImageName);
+    const selectedBoard = this.props.data.boards[this.state.selectedBoardIndex];
+
+    // do graphQL mutation!
+    this.props.mutate({
+      variables: {
+        name: this.state.name,
+        altName: this.state.altName,
+        thumbnail: uploadedImageName,
+        notes: this.state.notes,
+        board: this.props.data.boards[this.state.selectedBoardIndex]._id,
+        sensors: Object.entries(this.state.selectedSensors).map(([key, value]) => key)
+      },
+      optimisticResponse: {
+        createPlant: {
+          _id: -1, // temp, server decides real one
+          name: this.state.name,
+          altName: this.state.altName,
+          thumbnail: uploadedImageName,
+          notes: this.state.notes,
+          // @TODO: Look up how apollo handles nested graphQL types
+          // and whether this optimistic update is correct or if you should
+          // create 'board' by value and not by reference.
+          board: selectedBoard,
+          sensors: selectedBoard.sensors.filter((sensor) => this.state.selectedSensors[sensor._id])
+        }
+      }
+    })
 
   }
 
@@ -155,30 +182,40 @@ class AddPlantModal extends React.Component {
   }
 }
 
+// you name the mutation just for debugging purposes.
+// there's only one mutation, given to your component's props
+// as "mutate" (unless you do custom arguments)
 const addPlantMutation = gql`
   mutation addPlant(
     $name: String!,
-    $board: String!
+    $board: ID!
     $thumbnail: String,
     $altName: String,
     $tags: [String!],
-    $notes: String
+    $notes: String,
+    $sensors: [ID!]
     ) {
     createPlant(
       name: $name,
+      altName: $altName,
       thumbnail: $thumbnail,
       board: $board,
-      altName: $altName,
       tags: $tags,
-      notes: $notes
+      notes: $notes,
+      sensors: $sensors
       ) {
         _id
         name
-        thumbnail
-        board
         altName
+        thumbnail
+        board {
+          _id
+        }
         tags
         notes
+        sensors {
+          _id
+        }
       }
   }
 `;
@@ -201,11 +238,11 @@ export default compose(
   graphql(addPlantQuery),
   graphql(addPlantMutation),
   connect(
-    (state) => ({
-      isActive: state.modal.isActive
-    }),
+    null, // not mapping state to any props in this component
     (dispatch) => ({
       handleCloseModal() {
+        let foo = closeModal();
+        debugger;
         dispatch(closeModal());
       }
     })
