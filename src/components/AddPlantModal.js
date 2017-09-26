@@ -1,7 +1,7 @@
 import React from 'react';
 import { gql, graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
-import closeModal from '../redux/actionTypes'
+import { closeModal } from '../redux/actionTypes'
 import axios from 'axios';
 
 class AddPlantModal extends React.Component {
@@ -241,8 +241,6 @@ export default compose(
     null, // not mapping state to any props in this component
     (dispatch) => ({
       handleCloseModal() {
-        let foo = closeModal();
-        debugger;
         dispatch(closeModal());
       }
     })
