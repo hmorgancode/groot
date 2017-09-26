@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo';
-import { modalReducer } from './redux/reducers';
+import { appReducer, modalReducer } from './redux/reducers';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import App from './App';
 import './index.css';
@@ -16,6 +16,7 @@ const client = new ApolloClient({
 // using redux, though, so integrate apollo's store into ours.
 const store = createStore(
   combineReducers({
+    app: appReducer,
     modal: modalReducer,
     apollo: client.reducer()
   }),

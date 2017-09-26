@@ -1,7 +1,7 @@
 import React from 'react';
 // import { gql, graphql } from 'react-apollo';
 // import Truncate from 'react-truncate';
-// import { Collapse } from 'react-collapse';
+import { Collapse } from 'react-collapse';
 import PropTypes from 'prop-types';
 
 class Board extends React.Component {
@@ -31,13 +31,9 @@ class Board extends React.Component {
               <strong>{ this.props.location }</strong>
             </div>
           </div>
-          {/* <Collapse isOpened={ this.state.expanded }>
-            <div className="board-description">
-              <Truncate lines={4} ellipsis={''}>
-                <p>{ this.props.notes }</p>
-              </Truncate>
-            </div>
-          </Collapse> */}
+          { /* <Collapse isOpened={ this.state.expanded }> */}
+            { this.props.sensors.map((sensor) => <li key={sensor._id}>{`Pin ${sensor.dataPin} - ${sensor.type}`}</li>) }
+          { /* </Collapse> */ }
         </div>
       </article>
     );

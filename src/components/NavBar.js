@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { openModal } from '../redux/actionTypes';
+import { goToPlants, goToBoards, openModal } from '../redux/actionTypes';
 // import AddPlantForm from './AddPlantForm';
 // import ReactModal from 'react-modal';
 // ReactModal.setAppElement('#i-am-root');
@@ -34,21 +34,19 @@ class NavBar extends React.Component {
   // }
 
   render() {
-
-
     return (
       <div id="nav-bar" className="tabs is-toggle is-fullwidth">
         <ul>
-          <li onClick={() => this.changeTab('Plants')} className={this.isActiveTab('Plants')}>
+          <li onClick={() => { this.changeTab('Plants'); this.props.handleGoToPlants(); } } className={this.isActiveTab('Plants')}>
             <a>
               <span className="icon"><i className="fa fa-pagelines"></i></span>
               <span>Plants</span>
             </a>
           </li>
-          <li onClick={() => this.changeTab('Sensors')} className={this.isActiveTab('Sensors')}>
+          <li onClick={() => { this.changeTab('Sensors'); this.props.handleGoToBoards(); } } className={this.isActiveTab('Sensors')}>
             <a>
               <span className="icon"><i className="fa fa-bolt"></i></span>
-              <span>Sensors</span>
+              <span>Boards</span>
             </a>
           </li>
           <li onClick={ () => this.props.handleOpenModal('ADD_PLANT') } className={this.isActiveTab('Add/Remove')}>
@@ -79,6 +77,12 @@ const NavBarWithState = connect(
   (dispatch) => ({
     handleOpenModal(modalType) {
       dispatch(openModal(modalType));
+    },
+    handleGoToPlants() {
+      dispatch(goToPlants());
+    },
+    handleGoToBoards() {
+      dispatch(goToBoards());
     }
   })
 )(NavBar);

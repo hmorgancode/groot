@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Collapse } from 'react-collapse';
 
 /**
  * Base component for water- and moisture-level graphics.
@@ -20,7 +21,9 @@ function levelMeter (emptyImageUrl, fullImageUrl) {
       return (
         <div>
           <img src={fullImageUrl} role="presentation" className="image is-64x64"></img>
-          <img src={emptyImageUrl} role="presentation" className="level-meter-image image is-64x64" style={{height: emptyImageHeight}}></img>
+          <Collapse isOpened={true} fixedHeight={emptyImageHeight} className="level-meter-image">
+              <img src={emptyImageUrl} role="presentation" className="image is-64x64"></img>
+          </Collapse>
         </div>
       );
     }

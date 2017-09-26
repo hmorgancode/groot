@@ -30,6 +30,11 @@ const BoardListQuery = gql`
       _id
       location
       thumbnail
+      sensors {
+        _id
+        dataPin
+        type
+      }
     }
   }
 `;

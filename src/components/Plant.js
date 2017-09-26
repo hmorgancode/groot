@@ -4,6 +4,7 @@ import WaterLevelMeter from './WaterLevelMeter';
 import Truncate from 'react-truncate';
 import { Collapse } from 'react-collapse';
 import PropTypes from 'prop-types';
+import isUrl from 'is-url';
 
 class Plant extends React.Component {
 
@@ -16,12 +17,22 @@ class Plant extends React.Component {
   }
 
   render() {
+    // temp thumbnail code while I'm messing around
+    // when you go back to a single workflow, sort this out / remove it
+    let thumbnail = this.props.thumbnail;
+    if (thumbnail == null) {
+      thumbnail = `${process.env.PUBLIC_URL}/dros.jpg`;
+    }
+    // else if (!isUrl(thumbnail)) {
+    //   thumbnail = `localhost:3000/${this.props.thumbnail}`;
+    // }
+
     return (
       <article key={ this.props._id } className="media box" onClick={ this.expandBox.bind(this) }>
         <div className="media-left">
           <img
             className="image is-64x64"
-            src={ this.props.thumbnail || `${process.env.PUBLIC_URL}/dros.jpg` }
+            src={ thumbnail }
             alt={ this.props.name }>
           </img>
         </div>
@@ -48,7 +59,7 @@ class Plant extends React.Component {
         </div>
 
         <div className="media-right">
-          <WaterLevelMeter percentage={60} />
+          <WaterLevelMeter percentage={Math.random() * 100} />
           {/* placeholder for <WaterMeter plant={plant} /> */ }
         </div>
 
