@@ -10,7 +10,7 @@ class NavBar extends React.Component {
 
   render() {
     return (
-      <div className="tabs is-toggle is-fullwidth">
+      <div id="nav-bar" className="tabs is-toggle is-fullwidth">
         <ul>
           <li onClick={() => { this.props.handleGoToPlants(); } } className={this.isActiveTab('PLANTS')}>
             <a>

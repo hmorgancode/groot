@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "apollo-test-utils": "^0.3.2",
     "autoprefixer": "6.7.2",
     "axios-mock-adapter": "^1.9.0",
     "babel-core": "6.22.1",
@@ -31,6 +32,7 @@
     "file-loader": "0.10.0",
     "filesize": "3.3.0",
     "fs-extra": "0.30.0",
+    "graphql-tools": "^1.2.3",
     "gzip-size": "3.0.0",
     "html-webpack-plugin": "2.24.0",
     "http-proxy-middleware": "0.17.3",
@@ -54,6 +56,7 @@
   "dependencies": {
     "axios": "^0.16.2",
     "bulma": "^0.3.1",
+    "faker": "^4.1.0",
     "font-awesome": "^4.7.0",
     "is-url": "^1.2.2",
     "react": "^16.0.0",

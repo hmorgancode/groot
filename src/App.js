@@ -22,8 +22,8 @@ class App extends React.Component {
             <BoardList />
           </div>
         }
-        <NavBar id="nav-bar" />
-        <ModalConductor id="modal-conductor" />
+        <NavBar />
+        <ModalConductor />
       </div>
     );
   }

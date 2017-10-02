@@ -14,9 +14,3 @@ it('renders content when a page is active', () => {
   app = shallow(<App />);
   expect(app.find('#content').length).toBe(0);
 });
-
-it('always renders the nav bar and modal conductor', () => {
-  const app = shallow(<App />);
-  expect(app.find('#nav-bar').length).toBe(1);
-  expect(app.find('#modal-conductor').length).toBe(1);
-});
