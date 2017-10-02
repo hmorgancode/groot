@@ -1,10 +1,9 @@
 import React from 'react';
 // import { gql, graphql } from 'react-apollo';
 import WaterLevelMeter from './WaterLevelMeter';
-import Truncate from 'react-truncate';
 import { Collapse } from 'react-collapse';
 import PropTypes from 'prop-types';
-import isUrl from 'is-url';
+// import isUrl from 'is-url';
 
 class Plant extends React.Component {
 
@@ -51,9 +50,7 @@ class Plant extends React.Component {
           <Collapse isOpened={ this.state.expanded }>
             { /* For now- just cut off any instruction set that gets too long. */ }
             <div className="plant-description">
-              <Truncate lines={4} ellipsis={''}>
-                <p>{ this.props.notes }</p>
-              </Truncate>
+              <p>{ this.props.notes }</p>
             </div>
           </Collapse>
         </div>

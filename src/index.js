@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { ApolloClient, ApolloProvider, createNetworkInterface } from 'react-apollo';
 import { appReducer, modalReducer } from './redux/reducers';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import App from './App';
+import { AppWithState as App } from './App';
 import './index.css';
 
 const client = new ApolloClient({

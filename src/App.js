@@ -33,4 +33,4 @@ const AppWithState = connect(
   (state) => ({ activePage: state.app.activePage })
 )(App);
 
-export default AppWithState;
+export { App as AppWithoutState, AppWithState };

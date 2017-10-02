@@ -1,7 +1,7 @@
 import React from 'react';
 // import { gql, graphql } from 'react-apollo';
 // import Truncate from 'react-truncate';
-import { Collapse } from 'react-collapse';
+// import { Collapse } from 'react-collapse';
 import PropTypes from 'prop-types';
 
 class Board extends React.Component {
