@@ -68,7 +68,6 @@ class AddPlantModalWithoutState extends React.Component {
   }
 
   handleSelectImage = (e) => {
-    e.stopPropagation();
     let data = new FormData();
     data.append('thumbnail', e.target.files[0]);
     this.setState({
