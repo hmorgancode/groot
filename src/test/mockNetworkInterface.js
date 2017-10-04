@@ -155,28 +155,33 @@ const typeDefs = `
   }
 `;
 
-/*
-_id: ID!
-    name: String!
-    altName: String
-    thumbnail: String
-    tags: [String!]
-    notes: String
-    board: Board!
-    sensors: [Sensor!]
-*/
-
 const mocks = {
   Query: () => ({
-    plants: () => new MockList([5, 12])
+    // arbitrarily get 5-12 plants/boards/sensors
+    plants: () => new MockList([5, 12]),
+    boards: () => new MockList([5, 12]),
+    sensors: () => new MockList([5, 12])
   }),
   Plant: () => ({
     _id: () => faker.random.uuid(),
     name: () => faker.lorem.words(),
     altName: () => faker.lorem.words(),
-    thumbnail: () => 'http://lorempixel.com/256/256/nature/',
+    thumbnail: () => faker.image.nature(),
     tags: () => new MockList([0, 3], () => faker.lorem.word()),
-    notes: () => faker.lorem.paragraph()
+    notes: () => faker.lorem.paragraph(),
+    sensors: () => new MockList([0, 5])
+  }),
+  Board: () => ({
+    _id: () => faker.random.uuid(),
+    location: () => faker.lorem.word(),
+    type: () => faker.random.word(),
+    isRemote: () => faker.random.boolean(),
+    thumbnail: () => faker.image.technics(),
+    sensors: () => new MockList([2, 8])
+  }),
+  Sensor: () => ({
+    _id: () => faker.random.uuid(),
+    type: () => faker.random.word()
   })
 };
 

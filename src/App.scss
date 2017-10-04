@@ -30,6 +30,10 @@ body {
   max-width: 980px; // beginning of Bulma's "desktop" threshold
 }
 
+.hidden {
+  display: none;
+}
+
 #nav-bar {
   ul {
     padding: 0;

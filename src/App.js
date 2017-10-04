@@ -9,19 +9,22 @@ import BoardList from './components/BoardList';
 import './App.css';
 
 class App extends React.Component {
+
+  isActivePage = (page) => {
+    return (page === this.props.activePage) ? '' : 'hidden';
+  }
+
   render() {
     return (
       <div className="app">
-        { this.props.activePage === 'PLANTS' &&
-          <div id="content">
+        <div id="content">
+          <div className={this.isActivePage('PLANTS')}>
             <PlantList />
           </div>
-        }
-        { this.props.activePage === 'BOARDS' &&
-          <div id="content">
+          <div className={this.isActivePage('BOARDS')}>
             <BoardList />
           </div>
-        }
+        </div>
         <NavBar />
         <ModalConductor />
       </div>
