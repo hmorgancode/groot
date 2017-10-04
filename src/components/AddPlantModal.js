@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { closeModal } from '../redux/actionTypes'
 import axios from 'axios';
 
-class AddPlantModal extends React.Component {
+class AddPlantModalWithoutState extends React.Component {
 
   state = {
     requestInProgress: false,
@@ -80,7 +80,7 @@ class AddPlantModal extends React.Component {
   render() {
     return (
       <div className={'modal is-active'}>
-      <div className="modal-background" onClick={ this.props.handleCloseModal }></div>
+      <div className="modal-background js-modal-background" onClick={ this.props.handleCloseModal }></div>
       <div className="modal-card">
         <header className="modal-card-head">
           <p className="modal-card-title">Add Plant</p>
@@ -89,14 +89,14 @@ class AddPlantModal extends React.Component {
         <div className="modal-card-body add-plant-form form-body">
           <div className="control">
             <label className="label">Name</label>
-            <input required type="text" className="input"
+            <input required type="text" className="input js-name"
                    placeholder="Name" value={ this.state.name }
                    onChange={ (e) => { this.setState({ name: e.target.value }) } } />
           </div>
 
           <div className="control">
             <label className="label">Alternate Name</label>
-            <input type="text" className="input"
+            <input type="text" className="input js-alt-name"
                    placeholder="Latin, etc..." value={ this.state.altName }
                    onChange={ (e) => { this.setState({ altName: e.target.value }) } } />
           </div>
@@ -122,7 +122,7 @@ class AddPlantModal extends React.Component {
 
           <div className="control">
             <label className="label">Notes</label>
-            <textarea className="textarea" value={ this.state.notes }
+            <textarea className="textarea js-notes" value={ this.state.notes }
                       onChange={ (e) => { this.setState({ notes: e.target.value }) } } />
           </div>
 
@@ -136,7 +136,7 @@ class AddPlantModal extends React.Component {
               }) } }>
                 <option value={ this.state.selectedBoardIndex }>Select a board:</option>
                 {
-                  this.props.data.boards &&
+                  this.props.data && this.props.data.boards &&
                   this.props.data.boards.map((board, index) => {
                     return <option key={ board._id } value={ index }>{ board.location }</option>
                   })
@@ -169,10 +169,10 @@ class AddPlantModal extends React.Component {
         <div className="modal-card-foot">
           <div className="control is-grouped">
             <p className="control">
-              <button className="button is-primary" onClick={this.handleFormSubmit}>Submit</button>
+              <button className="button is-primary js-submit-form" onClick={this.handleFormSubmit}>Submit</button>
             </p>
             <p className="control">
-              <button className="button" onClick={this.props.handleCloseModal}>Cancel</button>
+              <button className="button js-close-modal" onClick={this.props.handleCloseModal}>Cancel</button>
             </p>
           </div>
         </div>
@@ -234,7 +234,7 @@ const addPlantQuery = gql`
   }
 `;
 
-export default compose(
+const AddPlantModal = compose(
   graphql(addPlantQuery),
   graphql(addPlantMutation),
   connect(
@@ -245,4 +245,6 @@ export default compose(
       }
     })
   )
-)(AddPlantModal);
+)(AddPlantModalWithoutState);
+
+export { AddPlantModalWithoutState, AddPlantModal };

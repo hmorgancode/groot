@@ -8,7 +8,7 @@ import BoardList from './components/BoardList';
 // import logo from './logo.svg';
 import './App.css';
 
-class App extends React.Component {
+class AppWithoutState extends React.Component {
 
   isActivePage = (page) => {
     return (page === this.props.activePage) ? '' : 'hidden';
@@ -32,8 +32,8 @@ class App extends React.Component {
   }
 }
 
-const AppWithState = connect(
+const App = connect(
   (state) => ({ activePage: state.app.activePage })
-)(App);
+)(AppWithoutState);
 
-export { App as AppWithoutState, AppWithState };
+export { AppWithoutState, App };

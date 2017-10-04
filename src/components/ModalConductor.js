@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import AddPlantModal from './AddPlantModal';
+import { AddPlantModal } from './AddPlantModal';
 
 class ModalConductor extends React.Component {
 

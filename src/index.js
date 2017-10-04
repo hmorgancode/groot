@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { ApolloClient, ApolloProvider } from 'react-apollo';
 import { appReducer, modalReducer } from './redux/reducers';
 import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
-import { AppWithState as App } from './App';
+import { App } from './App';
 import mockNetworkInterface from './test/mockNetworkInterface';
 import './index.css';
 
