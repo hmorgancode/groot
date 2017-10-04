@@ -3,6 +3,12 @@ import { shallow } from 'enzyme';
 // import MockAdapter from 'axios-mock-adapter';
 import { AddPlantModalWithoutState as AddPlantModal } from './AddPlantModal';
 
+const testData = {
+  boards: [
+    { _id: '123456789', sensors: []}
+  ]
+};
+
 it('renders', () => {
   shallow(<AddPlantModal />);
 });
@@ -50,12 +56,24 @@ it('stores file input in state as a name string and a FormData object', () => {
   spy.mockRestore();
 });
 
-// how to test board, and sensors?
-it('stores the selected board\'s id in state', () => {
-
+it(`stores the selected board's id in state`, () => {
+  const modal = shallow(<AddPlantModal data={testData} />);
+  const boardSelect = modal.find('.js-board-select');
+  boardSelect.simulate('change', {
+    target: {
+      value: '123456789'
+    }
+  });
+  expect(modal.state('selectedBoardId')).toBe('123456789')
+  boardSelect.simulate('change', {
+    target: {
+      value: 'null'
+    }
+  });
+  expect(modal.state('selectedBoardId')).toBe(null);
 });
 
-it('should display a board\'s sensors when the board is selected', () => {
+it(`should display a board's sensors when the board is selected`, () => {
 
 });
 

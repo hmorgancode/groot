@@ -14,7 +14,7 @@ class AddPlantModalWithoutState extends React.Component {
     imageName: '',
     notes: '',
 
-    selectedBoardIndex: -1,
+    selectedBoardId: null,
     selectedSensors: {}
   };
 
@@ -37,7 +37,7 @@ class AddPlantModalWithoutState extends React.Component {
 
     // Create plant
     console.log(uploadedImageName);
-    const selectedBoard = this.props.data.boards[this.state.selectedBoardIndex];
+    const selectedBoard = this.getSelectedBoard();
 
     // do graphQL mutation!
     this.props.mutate({
@@ -46,7 +46,7 @@ class AddPlantModalWithoutState extends React.Component {
         altName: this.state.altName,
         thumbnail: uploadedImageName,
         notes: this.state.notes,
-        board: this.props.data.boards[this.state.selectedBoardIndex]._id,
+        board: selectedBoard._id,
         sensors: Object.entries(this.state.selectedSensors).map(([key, value]) => key)
       },
       optimisticResponse: {
@@ -64,7 +64,10 @@ class AddPlantModalWithoutState extends React.Component {
         }
       }
     })
+  }
 
+  getSelectedBoard = () => {
+    return this.props.data.boards.find((board) => board._id === this.state.selectedBoardId);
   }
 
   handleSelectImage = (e) => {
@@ -129,15 +132,15 @@ class AddPlantModalWithoutState extends React.Component {
           <div className="control">
             <label className="label">Board</label>
             <div className="select">
-              <select onChange={(e) => { this.setState({
-                selectedBoardIndex: Number(e.target.value),
+              <select className="js-board-select" onChange={(e) => { this.setState({
+                selectedBoardId: e.target.value === 'null' ? null : e.target.value,
                 selectedSensors: {}
               }) } }>
-                <option value={ this.state.selectedBoardIndex }>Select a board:</option>
+                <option value="null">Select a board:</option>
                 {
                   this.props.data && this.props.data.boards &&
                   this.props.data.boards.map((board, index) => {
-                    return <option key={ board._id } value={ index }>{ board.location }</option>
+                    return <option key={ board._id } value={ board._id }>{ board.location }</option>
                   })
                 }
               </select>
@@ -148,8 +151,8 @@ class AddPlantModalWithoutState extends React.Component {
           <div className="control">
             <label className="label">Sensors</label>
               {
-                this.state.selectedBoardIndex < 0 ? <p>[select a board]</p> :
-                this.props.data.boards[this.state.selectedBoardIndex].sensors.map((sensor) => {
+                this.state.selectedBoardId === null ? <p>[select a board]</p> :
+                this.getSelectedBoard().sensors.map((sensor) => {
                   return <div className="control" key={ sensor._id }>
                            <label className="checkbox">
                              <input type="checkbox" value={ sensor._id }

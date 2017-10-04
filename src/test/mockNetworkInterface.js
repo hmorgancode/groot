@@ -167,7 +167,9 @@ const mocks = {
     name: () => faker.lorem.words(),
     altName: () => faker.lorem.words(),
     thumbnail: () => faker.image.nature(),
-    tags: () => new MockList([0, 3], () => faker.lorem.word()),
+    // create 0 to 3 tags containing 3 to 8 characters
+    // i am sorry
+    tags: () => new MockList([0, 3], () => faker.random.uuid().slice(0, 3 + Math.floor(Math.random() * 5.5))),
     notes: () => faker.lorem.paragraph(),
     sensors: () => new MockList([0, 5])
   }),

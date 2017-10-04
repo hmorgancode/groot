@@ -36,4 +36,5 @@ const App = connect(
   (state) => ({ activePage: state.app.activePage })
 )(AppWithoutState);
 
+// switch these to App and AppWithState later, react devtools go by the name you give connect
 export { AppWithoutState, App };
