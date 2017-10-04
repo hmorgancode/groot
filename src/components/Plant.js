@@ -2,6 +2,7 @@ import React from 'react';
 // import { gql, graphql } from 'react-apollo';
 import WaterLevelMeter from './WaterLevelMeter';
 import { Collapse } from 'react-collapse';
+import { presets } from 'react-motion';
 import PropTypes from 'prop-types';
 // import isUrl from 'is-url';
 
@@ -37,7 +38,7 @@ class Plant extends React.Component {
               { this.props.tags.length > 0 && <br /> }
             </div>
           </div>
-          <Collapse isOpened={ this.state.expanded }>
+          <Collapse isOpened={ this.state.expanded } springConfig={ presets.stiff } >
             { /* For now- just cut off any instruction set that gets too long. */ }
             <div className="plant-description">
               <p>{ this.props.notes }</p>
