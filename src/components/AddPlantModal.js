@@ -156,6 +156,7 @@ class AddPlantModalWithoutState extends React.Component {
                   return <div className="control" key={ sensor._id }>
                            <label className="checkbox">
                              <input type="checkbox" value={ sensor._id }
+                                    className="js-sensor-checkbox"
                                     checked={ this.state.selectedSensors[sensor._id] || false }
                                     onChange={ (e) => { this.setState({
                                       selectedSensors: { ...this.state.selectedSensors, [sensor._id]: e.target.checked }

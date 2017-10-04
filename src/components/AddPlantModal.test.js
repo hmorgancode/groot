@@ -5,7 +5,7 @@ import { AddPlantModalWithoutState as AddPlantModal } from './AddPlantModal';
 
 const testData = {
   boards: [
-    { _id: '123456789', sensors: []}
+    { _id: 'testDataId', sensors: [{ _id: 'sensor1Id' }, { _id: 'sensor2Id' }, { _id: 'sensor3Id' }] }
   ]
 };
 
@@ -61,10 +61,10 @@ it(`stores the selected board's id in state`, () => {
   const boardSelect = modal.find('.js-board-select');
   boardSelect.simulate('change', {
     target: {
-      value: '123456789'
+      value: 'testDataId'
     }
   });
-  expect(modal.state('selectedBoardId')).toBe('123456789')
+  expect(modal.state('selectedBoardId')).toBe('testDataId')
   boardSelect.simulate('change', {
     target: {
       value: 'null'
@@ -73,18 +73,45 @@ it(`stores the selected board's id in state`, () => {
   expect(modal.state('selectedBoardId')).toBe(null);
 });
 
-it(`should display a board's sensors when the board is selected`, () => {
+it(`displays a board's sensors when the board is selected`, () => {
+  const modal = shallow(<AddPlantModal data={testData} />);
+  expect(modal.find('.js-sensor').length).toBe(0);
+  modal.find('.js-board-select').simulate('change', {
+    target: {
+      value: 'testDataId'
+    }
+  });
+  expect(modal.find('.js-sensor-checkbox').length).toBe(3);
+});
+
+it('keeps track of selected sensor ids', () => {
+  const modal = shallow(<AddPlantModal data={testData} />);
+  modal.find('.js-board-select').simulate('change', {
+    target: {
+      value: 'testDataId'
+    }
+  });
+  expect(modal.state('selectedSensors')).toEqual({});
+  const sensorNodes = modal.find('.js-sensor-checkbox');
+  sensorNodes.at(0).simulate('change', {
+    target: {
+      checked: true
+    }
+  });
+  sensorNodes.at(2).simulate('change', {
+    target: {
+      checked: true
+    }
+  });
+  expect(modal.state('selectedSensors').sensor1Id).toBeDefined();
+  expect(modal.state('selectedSensors').sensor2Id).toBeUndefined();
+  expect(modal.state('selectedSensors').sensor3Id).toBeDefined();
+});
+
+it('verifies form input', () => {
 
 });
 
-it('should keep track of selected sensor ids', () => {
-
-});
-
-it('should verify form input', () => {
-
-});
-
-it('should handle form submission and file upload', () => {
-  // you'll want to shim in some graphql stuff for this one, probably
+it('handles form submission and file upload', () => {
+  // set defaultProp for "mutate" and use that.
 });
