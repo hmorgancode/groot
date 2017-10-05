@@ -109,9 +109,21 @@ it('keeps track of selected sensor ids', () => {
 });
 
 it('verifies form input', () => {
-
+  // Types are enforced by the inputs and the server has to validate anyways
+  // so just check that we require name and board to submit.
+  const spy = jest.fn().mockImplementation(() => Promise.resolve());
+  const modal = shallow(<AddPlantModal data={testData} mutate={spy} />);
+  const submitButton = modal.find('.js-submit-form');
+  submitButton.simulate('click');
+  expect(spy).not.toHaveBeenCalled();
+  modal.setState({ name: 'foo', selectedBoardId: 'testDataId' });
+  submitButton.simulate('click');
+  expect(spy).toHaveBeenCalled();
 });
 
-it('handles form submission and file upload', () => {
-  // set defaultProp for "mutate" and use that.
+it(`uploads thumbnail and submits the plant's data when submission button is clicked`, () => {
+  // const spy = jest.fn();
+  // const modal = shallow(<AddPlantModal data={testData} axios={{ post: spy }} mutate={spy} />);
+  // modal.find('.js-submit-form').simulate('click');
+  // expect(spy).toHaveBeenCalled();
 });

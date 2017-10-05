@@ -16,27 +16,34 @@ class AddPlantModalWithoutState extends React.Component {
 
     selectedBoardId: null,
     selectedSensors: {}
-  };
+  }
 
-  // Upload the image, then make a put request for the new plant.
+  // Shim so that we can provide a substitute during unit testing.
+  static defaultProps = {
+    axios: axios
+    // we also shim in mutate during testing, but that's provided by Apollo
+  }
+
+  // Upload the image (if provided) and submit the plant's data
   handleFormSubmit = async (e) => {
-    // Verify form input
-
-
-    this.setState({ requestInProgress: true });
-    // Upload the image and store the result.
-    let uploadedImageName;
-    try {
-      const res = await axios.post('http://localhost:3000/image_upload', this.state.imageData);
-      uploadedImageName = res.data;
-    } catch (error) {
-      this.setState({ error });
-      console.error('An error occurred while uploading the thumbnail image.');
+    if (this.state.name == null || this.state.selectedBoardId == null) {
       return;
     }
 
-    // Create plant
-    console.log(uploadedImageName);
+    this.setState({ requestInProgress: true });
+
+    let uploadedImageName = '';
+    if (this.state.imageData) {
+      try {
+        const res = await this.props.axios.post('http://localhost:3000/image_upload', this.state.imageData);
+        uploadedImageName = res.data;
+      } catch (error) {
+        this.setState({ error });
+        console.error('An error occurred while uploading the thumbnail image.');
+        return;
+      }
+    }
+
     const selectedBoard = this.getSelectedBoard();
 
     // do graphQL mutation!
