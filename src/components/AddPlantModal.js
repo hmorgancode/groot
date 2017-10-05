@@ -70,7 +70,7 @@ class AddPlantModalWithoutState extends React.Component {
           sensors: selectedBoard.sensors.filter((sensor) => this.state.selectedSensors[sensor._id])
         }
       }
-    })
+    });
   }
 
   getSelectedBoard = () => {
