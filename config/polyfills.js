@@ -14,6 +14,6 @@ require('whatwg-fetch');
 Object.assign = require('object-assign');
 
 // Shim requestAnimationFrame https://github.com/facebook/jest/issues/4545
-global.requestAnimationFrame = (callback) => {
-    setTimeout(callback, 0);
+global.requestAnimationFrame = function(callback) {
+  setTimeout(callback, 0);
 };
