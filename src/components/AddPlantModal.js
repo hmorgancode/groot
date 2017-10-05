@@ -3,6 +3,7 @@ import { gql, graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
 import { closeModal } from '../redux/actionTypes'
 import axios from 'axios';
+import PlantsQuery from '../graphql/PlantsQuery';
 
 class AddPlantModalWithoutState extends React.Component {
 
@@ -45,7 +46,7 @@ class AddPlantModalWithoutState extends React.Component {
     }
 
     const selectedBoard = this.getSelectedBoard();
-
+    // debugger;
     // do graphQL mutation!
     this.props.mutate({
       variables: {
@@ -57,18 +58,29 @@ class AddPlantModalWithoutState extends React.Component {
         sensors: Object.entries(this.state.selectedSensors).map(([key, value]) => key)
       },
       optimisticResponse: {
+        __typename: 'Mutation',
         createPlant: {
-          _id: -1, // temp, server decides real one
+          __typename: 'Plant',
+          // temp id, server decides real one.
+          // consider making a uuid here in case of multiple optimistic updates.
+          _id: (Math.random() * 100).toString(),
           name: this.state.name,
           altName: this.state.altName,
           thumbnail: uploadedImageName,
           notes: this.state.notes,
-          // @TODO: Look up how apollo handles nested graphQL types
-          // and whether this optimistic update is correct or if you should
-          // create 'board' by value and not by reference.
-          board: selectedBoard,
+          tags: [],
+          board: { __typename: 'Board', location: selectedBoard.location, _id: selectedBoard._id },
           sensors: selectedBoard.sensors.filter((sensor) => this.state.selectedSensors[sensor._id])
+            .map((sensor) => ({ __typename: 'Sensor', type: sensor.type, _id: sensor._id }))
         }
+      },
+      update: (store, { data: { createPlant } })=> {
+        const data = store.readQuery({ query: PlantsQuery });
+        // debugger;
+        data.plants.push(createPlant);
+        store.writeQuery({ query: PlantsQuery, data });
+        // const foo = store.readQuery({ query: getPlantsQuery });
+        // debugger;
       }
     });
   }
@@ -220,11 +232,13 @@ const addPlantMutation = gql`
         thumbnail
         board {
           _id
+          location
         }
         tags
         notes
         sensors {
           _id
+          type
         }
       }
   }
