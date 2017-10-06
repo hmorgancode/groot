@@ -4828,7 +4828,7 @@ react-apollo@^1.4.8:
     object-assign "^4.0.1"
     prop-types "^15.5.8"
 
-react-collapse@^4.0.2:
+react-collapse@^4.0.3:
   version "4.0.3"
   resolved "https://registry.yarnpkg.com/react-collapse/-/react-collapse-4.0.3.tgz#b96de959ed0092a43534630b599a4753dd76d543"
   dependencies:

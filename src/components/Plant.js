@@ -1,9 +1,10 @@
 import React from 'react';
 // import { gql, graphql } from 'react-apollo';
 import WaterLevelMeter from './WaterLevelMeter';
-import { Collapse } from 'react-collapse';
 import { presets } from 'react-motion';
 import PropTypes from 'prop-types';
+// import Collapse from './MountOnlyCollapse';
+import { Collapse } from 'react-collapse';
 // import isUrl from 'is-url';
 
 class Plant extends React.Component {
@@ -12,13 +13,13 @@ class Plant extends React.Component {
     expanded: false
   };
 
-  expandBox() {
+  expandBox = () => {
     this.setState({ expanded: !this.state.expanded });
   }
 
   render() {
     return (
-      <article key={ this.props._id } className="media box" onClick={ this.expandBox.bind(this) }>
+      <article key={ this.props._id } className="media box" onClick={ this.expandBox }>
         <div className="media-left">
           <img
             className="image is-64x64"
@@ -38,6 +39,7 @@ class Plant extends React.Component {
               { this.props.tags.length > 0 && <br /> }
             </div>
           </div>
+
           <Collapse isOpened={ this.state.expanded } springConfig={ presets.stiff } >
             { /* For now- just cut off any instruction set that gets too long. */ }
             <div className="plant-description">

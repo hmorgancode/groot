@@ -46,7 +46,6 @@ class AddPlantModalWithoutState extends React.Component {
     }
 
     const selectedBoard = this.getSelectedBoard();
-    // debugger;
     // do graphQL mutation!
     this.props.mutate({
       variables: {
@@ -57,23 +56,23 @@ class AddPlantModalWithoutState extends React.Component {
         board: selectedBoard._id,
         sensors: Object.entries(this.state.selectedSensors).map(([key, value]) => key)
       },
-      optimisticResponse: {
-        __typename: 'Mutation',
-        createPlant: {
-          __typename: 'Plant',
-          // temp id, server decides real one.
-          // consider making a uuid here in case of multiple optimistic updates.
-          _id: (Math.random() * 100).toString(),
-          name: this.state.name,
-          altName: this.state.altName,
-          thumbnail: uploadedImageName,
-          notes: this.state.notes,
-          tags: [],
-          board: { __typename: 'Board', location: selectedBoard.location, _id: selectedBoard._id },
-          sensors: selectedBoard.sensors.filter((sensor) => this.state.selectedSensors[sensor._id])
-            .map((sensor) => ({ __typename: 'Sensor', type: sensor.type, _id: sensor._id }))
-        }
-      },
+      // optimisticResponse: {
+      //   __typename: 'Mutation',
+      //   createPlant: {
+      //     __typename: 'Plant',
+      //     // temp id, server decides real one.
+      //     // consider making a uuid here in case of multiple optimistic updates.
+      //     _id: (Math.random() * 100).toString(),
+      //     name: this.state.name,
+      //     altName: this.state.altName,
+      //     thumbnail: uploadedImageName,
+      //     notes: this.state.notes,
+      //     tags: [],
+      //     board: { __typename: 'Board', location: selectedBoard.location, _id: selectedBoard._id },
+      //     sensors: selectedBoard.sensors.filter((sensor) => this.state.selectedSensors[sensor._id])
+      //       .map((sensor) => ({ __typename: 'Sensor', type: sensor.type, _id: sensor._id }))
+      //   }
+      // },
       update: (store, { data: { createPlant } })=> {
         const data = store.readQuery({ query: PlantsQuery });
         // debugger;
