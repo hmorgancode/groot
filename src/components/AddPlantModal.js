@@ -56,6 +56,10 @@ class AddPlantModalWithoutState extends React.Component {
         board: selectedBoard._id,
         sensors: Object.entries(this.state.selectedSensors).map(([key, value]) => key)
       },
+      // @TODO figure out why enabling optimistic response was causing a single warning from
+      // react-motion. After the optimistic update things were okay, but the immediate
+      // followup actual update caused the warning (setState called while component unmounted)
+      // probably a solid reason if you dig through the source sometime
       // optimisticResponse: {
       //   __typename: 'Mutation',
       //   createPlant: {
@@ -82,6 +86,8 @@ class AddPlantModalWithoutState extends React.Component {
         // debugger;
       }
     });
+
+    this.props.handleCloseModal();
   }
 
   getSelectedBoard = () => {

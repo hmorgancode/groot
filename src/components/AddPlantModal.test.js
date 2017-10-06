@@ -9,11 +9,11 @@ const testData = {
   ]
 };
 
-it('renders', () => {
+test('render', () => {
   shallow(<AddPlantModal />);
 });
 
-it('closes when the close button or outside of modal are clicked', () => {
+test('Modal closes when the close button or outside of modal are clicked', () => {
   const mockClose = jest.fn();
   const modal = shallow(<AddPlantModal handleCloseModal={mockClose} />);
   modal.find('.js-close-modal').simulate('click');
@@ -21,7 +21,7 @@ it('closes when the close button or outside of modal are clicked', () => {
   expect(mockClose.mock.calls.length).toBe(2);
 });
 
-it('stores text input in state', () => {
+test('Modal stores text input in state', () => {
   const modal = shallow(<AddPlantModal />);
   modal.find('.js-name').simulate('change', { target: { value: 'fooName' } });
   modal.find('.js-alt-name').simulate('change', { target: { value: 'fooAltName' } });
@@ -33,7 +33,7 @@ it('stores text input in state', () => {
   }));
 });
 
-it('keeps state authoritative over text input', () => {
+test('Modal keeps state authoritative over text input', () => {
   const modal = shallow(<AddPlantModal />);
   modal.setState({ name: '1', altName: '2', notes: '3' });
   expect(modal.find('.js-name').props().value).toBe('1');
@@ -41,7 +41,7 @@ it('keeps state authoritative over text input', () => {
   expect(modal.find('.js-notes').props().value).toBe('3');
 });
 
-it('stores file input in state as a name string and a FormData object', () => {
+test('Modal stores file input in state as a name string and a FormData object', () => {
   const modal = shallow(<AddPlantModal />);
   const spy = jest.spyOn(FormData.prototype, 'append');
   modal.find('#add-plant-image').simulate('change', {
@@ -56,7 +56,7 @@ it('stores file input in state as a name string and a FormData object', () => {
   spy.mockRestore();
 });
 
-it(`stores the selected board's id in state`, () => {
+test(`Modal stores the selected board's id in state`, () => {
   const modal = shallow(<AddPlantModal data={testData} />);
   const boardSelect = modal.find('.js-board-select');
   boardSelect.simulate('change', {
@@ -73,7 +73,7 @@ it(`stores the selected board's id in state`, () => {
   expect(modal.state('selectedBoardId')).toBe(null);
 });
 
-it(`displays a board's sensors when the board is selected`, () => {
+test(`Modal displays a board's sensors when the board is selected`, () => {
   const modal = shallow(<AddPlantModal data={testData} />);
   expect(modal.find('.js-sensor').length).toBe(0);
   modal.find('.js-board-select').simulate('change', {
@@ -84,7 +84,7 @@ it(`displays a board's sensors when the board is selected`, () => {
   expect(modal.find('.js-sensor-checkbox').length).toBe(3);
 });
 
-it('keeps track of selected sensor ids', () => {
+test('Modal keeps track of selected sensor ids', () => {
   const modal = shallow(<AddPlantModal data={testData} />);
   modal.find('.js-board-select').simulate('change', {
     target: {
@@ -111,7 +111,7 @@ it('keeps track of selected sensor ids', () => {
 // Now that you think of it, you should add clear cues for invalid form and/or
 // grey out the submission button. Just add a verify function later and
 // test THAT
-it('submits on click when given required form data', () => {
+test('Modal submits on click when given required form data', () => {
   // Types are enforced by the inputs and the server has to validate anyways
   // so just check that we require name and board to submit.
   const spy = jest.fn().mockImplementation(() => Promise.resolve());
@@ -124,7 +124,7 @@ it('submits on click when given required form data', () => {
   expect(spy).toHaveBeenCalled();
 });
 
-it(`uploads thumbnail on form submission when a thumbnail is provided`, () => {
+test(`Modal uploads thumbnail on form submission when a thumbnail is provided`, () => {
   const spyAxios = jest.fn().mockImplementation(() => Promise.resolve({ data: 'url/img.jpg' }));
   const spyMutate = jest.fn();
   const modal = shallow(<AddPlantModal data={testData} axios={{ post: spyAxios }} mutate={spyMutate} />);
@@ -141,4 +141,12 @@ it(`uploads thumbnail on form submission when a thumbnail is provided`, () => {
   //     thumbnail: 'url/img.jpg'
   //   })
   // }));
+});
+
+test('Modal closes after submission', () => {
+  const mockClose = jest.fn();
+  const modal = shallow(<AddPlantModal data={testData} mutate={() => null} handleCloseModal={mockClose} />);
+  modal.setState({ name: 'foo', selectedBoardId: 'testDataId' });
+  modal.find('.js-submit-form').simulate('click');
+  expect(mockClose.mock.calls.length).toBe(1);
 });
