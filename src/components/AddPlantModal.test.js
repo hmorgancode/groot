@@ -73,8 +73,6 @@ test(`stores the selected board's id in state`, () => {
   expect(modal.state('selectedBoardId')).toBe(null);
 });
 
-///////// below:
-///
 test(`displays a board's sensors when the board is selected`, () => {
   const modal = mount(<AddPlantModal data={testData} />);
   expect(modal.find('.js-sensor').length).toBe(0);
@@ -113,7 +111,6 @@ test('keeps track of selected sensor ids', () => {
 // Now that you think of it, you should add clear cues for invalid form and/or
 // grey out the submission button. Just add a verify function later and
 // test THAT
-// this is the other
 test('submits on click when given required form data', () => {
   // Types are enforced by the inputs and the server has to validate anyways
   // so just check that we require name and board to submit.
@@ -127,7 +124,6 @@ test('submits on click when given required form data', () => {
   expect(spy).toHaveBeenCalled();
 });
 
-// this is one
 test(`uploads thumbnail on form submission when a thumbnail is provided`, () => {
   const spyAxios = jest.fn().mockImplementation(() => Promise.resolve({ data: 'url/img.jpg' }));
   const spyMutate = jest.fn();

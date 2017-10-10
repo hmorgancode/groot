@@ -108,7 +108,7 @@ function createAddPlantModal(Modal) {
       return (
         <Modal title="Add Plant"
           body={
-          <div className="add-plant-form">
+          <div className="modal-form">
             <div className="control">
               <label className="label">Name</label>
               <input required type="text" className="input js-name"
