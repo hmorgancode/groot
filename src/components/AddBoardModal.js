@@ -1,5 +1,10 @@
 import React from 'react';
 import { ModalWithoutState, Modal } from './Modal';
+import axios from 'axios';
+import BoardsQuery from '../graphql/BoardsQuery';
+import { gql, graphql, compose } from 'react-apollo';
+import { connect } from 'react-redux';
+import { closeModal } from '../redux/actionTypes';
 
 function createAddBoardModal(Modal) {
   /**
@@ -8,11 +13,63 @@ function createAddBoardModal(Modal) {
    */
   return class AddBoardModal extends React.Component {
     state = {
+      // Required:
       location: '',
+      // Optional:
       type: '',
       isRemote: false,
       imageName: '',
       imageData: null
+    }
+
+    // Shim so that we can provide a substitute during unit testing.
+    static defaultProps = {
+      axios: axios
+      // we also shim in mutate during testing, but that's provided by Apollo
+    }
+
+    handleSelectImage = (e) => {
+      let data = new FormData();
+      data.append('thumbnail', e.target.files[0]);
+      this.setState({
+        imageName: e.target.files[0].name,
+        imageData: data
+      });
+    }
+
+    // Upload the image (if provided) and submit the board's data
+    handleFormSubmit = async (e) => {
+      if (this.state.location === '') {
+        return;
+      }
+
+      let uploadedImageName = '';
+      if (this.state.imageData) {
+        try {
+          const res = await this.props.axios.post('http://localhost:3000/image_upload', this.state.imageData);
+          uploadedImageName = res.data;
+        } catch (error) {
+          this.setState({ error });
+          console.error('An error occurred while uploading the thumbnail image.');
+          return;
+        }
+      }
+
+      this.props.mutate({
+        variables: {
+          location: this.state.location,
+          type: this.state.type,
+          isRemote: this.state.isRemote,
+          thumbnail: uploadedImageName
+        },
+        update: (store, { data: { createBoard } })=> {
+          const data = store.readQuery({ query: BoardsQuery });
+          data.boards.push(createBoard);
+          store.writeQuery({ query: BoardsQuery, data });
+        }
+      });
+
+      this.props.handleCloseModal();
     }
 
     render() {
@@ -71,7 +128,41 @@ function createAddBoardModal(Modal) {
   }
 }
 
-const AddBoardModal = createAddBoardModal(Modal);
+const addBoardMutation = gql`
+  mutation addBoard(
+    $location: String!,
+    $type: String,
+    $isRemote: Boolean,
+    $thumbnail: String
+    ) {
+    createBoard(
+      location: $location,
+      type: $type,
+      isRemote: $isRemote,
+      thumbnail: $thumbnail
+      ) {
+        _id
+        location
+        type
+        isRemote
+        thumbnail
+      }
+  }
+`;
+
+let AddBoardModal = createAddBoardModal(Modal);
+AddBoardModal = compose(
+  graphql(addBoardMutation),
+  connect(
+    null, // not mapping state to any props in this component
+    (dispatch) => ({
+      handleCloseModal() {
+        dispatch(closeModal());
+      }
+    })
+  )
+)(AddBoardModal);
+
 const AddBoardModalWithoutState = createAddBoardModal(ModalWithoutState);
 
 export { AddBoardModalWithoutState, AddBoardModal };

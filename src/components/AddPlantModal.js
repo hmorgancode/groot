@@ -10,13 +10,14 @@ function createAddPlantModal(Modal) {
   return class AddPlantModal extends React.Component {
     state = {
       requestInProgress: false,
+      // Required:
       name: '',
+      selectedBoardId: null,
+      // Optional:
       altName: '',
       imageData: null,
       imageName: '',
       notes: '',
-
-      selectedBoardId: null,
       selectedSensors: {}
     }
 
@@ -28,7 +29,7 @@ function createAddPlantModal(Modal) {
 
     // Upload the image (if provided) and submit the plant's data
     handleFormSubmit = async (e) => {
-      if (this.state.name == null || this.state.selectedBoardId == null) {
+      if (this.state.name === '' || this.state.selectedBoardId == null) {
         return;
       }
 

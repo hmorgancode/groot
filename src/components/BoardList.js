@@ -1,6 +1,7 @@
 import React from 'react';
-import { gql, graphql } from 'react-apollo';
+import { graphql } from 'react-apollo';
 import Board from './Board';
+import BoardsQuery from '../graphql/BoardsQuery';
 // import PropTypes from 'prop-types';
 
 
@@ -24,21 +25,6 @@ class BoardList extends React.Component {
   // Boards: PropTypes.arrayOf(PropTypes.object)
 // };
 
-const BoardListQuery = gql`
-  query BoardListQuery {
-    boards {
-      _id
-      location
-      thumbnail
-      sensors {
-        _id
-        dataPin
-        type
-      }
-    }
-  }
-`;
-
-const BoardListWithData = graphql(BoardListQuery)(BoardList);
+const BoardListWithData = graphql(BoardsQuery)(BoardList);
 
 export default BoardListWithData;

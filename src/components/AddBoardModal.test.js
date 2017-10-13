@@ -12,7 +12,7 @@ test('closes when the cancel button is clicked', () => {
   const mockClose = jest.fn();
   const modal = mount(<AddBoardModal handleCloseModal={mockClose} />);
   modal.find('.js-cancel-button').simulate('click');
-  expect(mockClose.mock.calls.length).toBe(1);
+  expect(mockClose).toHaveBeenCalled();
 });
 
 test('stores input in state', () => {
@@ -71,8 +71,8 @@ test(`uploads thumbnail on form submission when a thumbnail is provided`, () => 
 
 test('closes after submission', () => {
   const mockClose = jest.fn();
-  const modal = mount(<AddBoardModal handleCloseModal={mockClose} />);
+  const modal = mount(<AddBoardModal handleCloseModal={mockClose} mutate={noop} />);
   modal.setState({ location: 'foo' });
   modal.find('.js-submit-form').simulate('click');
-  expect(mockClose.mock.calls.length).toBe(1);
+  expect(mockClose).toHaveBeenCalled();
 });

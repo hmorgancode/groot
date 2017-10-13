@@ -18,7 +18,7 @@ test('closes when the cancel button is clicked', () => {
   const mockClose = jest.fn();
   const modal = mount(<AddPlantModal handleCloseModal={mockClose} />);
   modal.find('.js-cancel-button').simulate('click');
-  expect(mockClose.mock.calls.length).toBe(1);
+  expect(mockClose).toHaveBeenCalled();
 });
 
 test('stores text input in state', () => {
@@ -119,6 +119,12 @@ test('submits on click when given required form data', () => {
   const submitButton = modal.find('.js-submit-form');
   submitButton.simulate('click');
   expect(spy).not.toHaveBeenCalled();
+  modal.setState({ name: 'foo'});
+  submitButton.simulate('click');
+  expect(spy).not.toHaveBeenCalled();
+  modal.setState({ name: '', selectedBoardId: null });
+  submitButton.simulate('click');
+  expect(spy).not.toHaveBeenCalled();
   modal.setState({ name: 'foo', selectedBoardId: 'testDataId' });
   submitButton.simulate('click');
   expect(spy).toHaveBeenCalled();
@@ -146,8 +152,8 @@ test(`uploads thumbnail on form submission when a thumbnail is provided`, () => 
 
 test('closes after submission', () => {
   const mockClose = jest.fn();
-  const modal = mount(<AddPlantModal data={testData} mutate={() => null} handleCloseModal={mockClose} />);
+  const modal = mount(<AddPlantModal data={testData} mutate={noop} handleCloseModal={mockClose} />);
   modal.setState({ name: 'foo', selectedBoardId: 'testDataId' });
   modal.find('.js-submit-form').simulate('click');
-  expect(mockClose.mock.calls.length).toBe(1);
+  expect(mockClose).toHaveBeenCalled();
 });
