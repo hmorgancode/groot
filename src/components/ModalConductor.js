@@ -4,7 +4,6 @@ import { AddPlantModal } from './AddPlantModal';
 import { AddBoardModal } from './AddBoardModal';
 
 class ModalConductor extends React.Component {
-
   render() {
     if (!this.props.isActive) {
       return null;
@@ -12,9 +11,9 @@ class ModalConductor extends React.Component {
 
     switch(this.props.modalType) {
       case 'ADD_PLANT':
-        return <AddPlantModal />;
+        return <div id="js-conductor-add-plant"><AddPlantModal /></div>;
       case 'ADD_BOARD':
-        return <AddBoardModal />
+        return <div id="js-conductor-add-board"><AddBoardModal /></div>;
       default:
         return null;
     }
@@ -26,4 +25,4 @@ const ModalConductorWithState = connect(
   (state) => ({ isActive: state.modal.isActive, modalType: state.modal.modalType })
 )(ModalConductor);
 
-export default ModalConductorWithState;
+export { ModalConductorWithState as ModalConductor, ModalConductor as ModalConductorWithoutState };
