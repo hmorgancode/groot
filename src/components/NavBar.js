@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { goToPlants, goToBoards, openModal } from '../redux/actionTypes';
+import { goToPlants, goToBoards, openModal, toggleEditMode } from '../redux/actionTypes';
 
 class NavBar extends React.Component {
 
@@ -8,22 +8,22 @@ class NavBar extends React.Component {
     return tabName === this.props.activePage ? 'is-active' : '';
   }
 
-  openModalByContext = () => {
-    // @TODO: move ADD_PLANT and ADD_BOARD strings to action creators?
-    // as-is you've got them here and in ModalConductor, communicating via
-    // redux, which feels weird.
-    // (same with 'PLANTS' and 'BOARDS' down below)
-    switch (this.props.activePage) {
-      case 'PLANTS':
-        this.props.handleOpenModal('ADD_PLANT');
-        return;
-      case 'BOARDS':
-        this.props.handleOpenModal('ADD_BOARD');
-        return;
-      default:
-        return;
-    }
-  }
+  // openModalByContext = () => {
+  //   // @TODO: move ADD_PLANT and ADD_BOARD strings to action creators?
+  //   // as-is you've got them here and in ModalConductor, communicating via
+  //   // redux, which feels weird.
+  //   // (same with 'PLANTS' and 'BOARDS' down below)
+  //   switch (this.props.activePage) {
+  //     case 'PLANTS':
+  //       this.props.handleOpenModal('ADD_PLANT');
+  //       return;
+  //     case 'BOARDS':
+  //       this.props.handleOpenModal('ADD_BOARD');
+  //       return;
+  //     default:
+  //       return;
+  //   }
+  // }
 
   render() {
     return (
@@ -41,7 +41,7 @@ class NavBar extends React.Component {
               <span>Boards</span>
             </a>
           </li>
-          <li id="js-nav-edit" onClick={ () => this.openModalByContext() }>
+          <li id="js-nav-edit" onClick={ this.props.toggleEditMode } className={this.props.isEditing ? 'editing' : ''} >
             <a>
               <span className="icon"><i className="fa fa-cogs"></i></span>
               <span>Add/Remove</span>
@@ -54,7 +54,7 @@ class NavBar extends React.Component {
 }
 
 const NavBarWithState = connect(
-  (state) => ({ activePage: state.app.activePage }),
+  (state) => ({ activePage: state.app.activePage, isEditing: state.app.isEditing }),
   (dispatch) => ({
     handleOpenModal(modalType) {
       dispatch(openModal(modalType));
@@ -64,6 +64,9 @@ const NavBarWithState = connect(
     },
     handleGoToBoards() {
       dispatch(goToBoards());
+    },
+    toggleEditMode() {
+      dispatch(toggleEditMode());
     }
   })
 )(NavBar);

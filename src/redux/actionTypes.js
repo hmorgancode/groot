@@ -30,3 +30,12 @@ export function closeModal() {
     type: CLOSE_MODAL
   }
 }
+
+//// NavBar
+
+export const TOGGLE_EDIT_MODE = 'TOGGLE_EDIT_MODE';
+export function toggleEditMode() {
+  return {
+    type: TOGGLE_EDIT_MODE
+  }
+}

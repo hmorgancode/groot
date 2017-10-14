@@ -29,6 +29,9 @@ test('Highlights active tab', () => {
   expect(navBar.find('#js-nav-plants').prop('className')).toBe('');
 });
 
-test.skip('Enables edit mode when add/remove button is clicked', () => {
-
+test('Enables edit mode when add/remove button is clicked', () => {
+  const spy = jest.fn();
+  const navBar = shallow(<NavBar toggleEditMode={spy} />);
+  navBar.find('#js-nav-edit').simulate('click');
+  expect(spy).toHaveBeenCalled();
 });

@@ -35,6 +35,11 @@ body {
 }
 
 #nav-bar {
+  // When we add a modal, the nav-bar is no longer the last item
+  // in the DOM. Force the bottom margin to 0 to prevent Bulma from
+  // adding one (and creating a weird scroll-space) when this happens.
+  margin-bottom: 0;
+
   ul {
     padding: 0;
     margin: 0;
@@ -47,10 +52,16 @@ body {
     }
   }
 
-  // When we add a modal, the nav-bar is no longer the last item
-  // in the DOM. Force the bottom margin to 0 to prevent Bulma from
-  // adding one (and creating a weird scroll-space) when this happens.
-  margin-bottom: 0;
+  .editing {
+    background-color: $warning;
+    border-color: $warning;
+
+    :hover {
+      // slightly darker than $warning
+      background-color: hsl(48, 100%, 60);
+      border-color: hsl(48, 100%, 60);
+    }
+  }
 }
 
 #content {
