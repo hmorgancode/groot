@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AddPlantModal } from './AddPlantModal';
+import { AddBoardModal } from './AddBoardModal';
 
 class ModalConductor extends React.Component {
 
@@ -12,7 +13,8 @@ class ModalConductor extends React.Component {
     switch(this.props.modalType) {
       case 'ADD_PLANT':
         return <AddPlantModal />;
-
+      case 'ADD_BOARD':
+        return <AddBoardModal />
       default:
         return null;
     }

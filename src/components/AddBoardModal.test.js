@@ -52,7 +52,7 @@ test('stores file input in state as a name string and a FormData object', () => 
 
 test('submits on click when given required form data', () => {
   const spy = jest.fn().mockImplementation(() => Promise.resolve());
-  const modal = mount(<AddBoardModal mutate={spy} />);
+  const modal = mount(<AddBoardModal mutate={spy} handleCloseModal={noop} />);
   const submitButton = modal.find('.js-submit-form');
   submitButton.simulate('click');
   expect(spy).not.toHaveBeenCalled();
@@ -63,7 +63,7 @@ test('submits on click when given required form data', () => {
 
 test(`uploads thumbnail on form submission when a thumbnail is provided`, () => {
   const spyAxios = jest.fn().mockImplementation(() => Promise.resolve({ data: 'url/img.jpg' }));
-  const modal = mount(<AddBoardModal axios={{ post: spyAxios }} mutate={noop} />);
+  const modal = mount(<AddBoardModal axios={{ post: spyAxios }} mutate={noop} handleCloseModal={noop} />);
   modal.setState({ location: 'foo', imageData: 'img.jpg' });
   modal.find('.js-submit-form').simulate('click');
   expect(spyAxios).toHaveBeenCalled();

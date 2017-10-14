@@ -87,12 +87,12 @@ function createAddBoardModal(Modal) {
             <div className="control">
               <label className="label">Type</label>
               <input type="text" className="input js-type"
-                     placeholder="Moisture, Water Level, etc..." value={ this.state.type }
+                     placeholder="Arduino Mega, Uno, Nano, etc..." value={ this.state.type }
                      onChange={ (e) => { this.setState({ type: e.target.value }) } } />
             </div>
 
             <div className="control">
-              <label className="checkbox"></label>
+              <label className="checkbox">Is remote:</label>
               <input type="checkbox" className="js-is-remote"
                      checked={ this.state.isRemote }
                      onChange={ (e) => { this.setState({ isRemote: e.target.checked }) } } />
@@ -146,6 +146,11 @@ const addBoardMutation = gql`
         type
         isRemote
         thumbnail
+        sensors {
+          _id
+          dataPin
+          type
+        }
       }
   }
 `;
