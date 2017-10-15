@@ -1,11 +1,9 @@
 import React from 'react';
-// import { gql, graphql } from 'react-apollo';
 import WaterLevelMeter from './WaterLevelMeter';
 import { presets } from 'react-motion';
 import PropTypes from 'prop-types';
-// import Collapse from './MountOnlyCollapse';
 import { Collapse } from 'react-collapse';
-// import isUrl from 'is-url';
+import { connect } from 'react-redux';
 
 class Plant extends React.Component {
 
@@ -15,9 +13,11 @@ class Plant extends React.Component {
     thumbnail: PropTypes.string,
     board: PropTypes.object.isRequired,
     altName: PropTypes.string,
-    tags: PropTypes.arrayOf(PropTypes.string),
+    tags: PropTypes.arrayOf(PropTypes.string).isRequired,
     notes: PropTypes.string,
-    sensors: PropTypes.arrayOf(PropTypes.object)
+    sensors: PropTypes.arrayOf(PropTypes.object),
+    // redux:
+    isEditing: PropTypes.bool.isRequired
   }
 
   state = {
@@ -30,7 +30,7 @@ class Plant extends React.Component {
 
   render() {
     return (
-      <article key={ this.props._id } className="media box" onClick={ this.expandBox }>
+      <article key={ this.props._id } className="js-plant media box" onClick={ this.expandBox }>
         <div className="media-left">
           <img
             className="image is-64x64"
@@ -70,4 +70,8 @@ class Plant extends React.Component {
   }
 }
 
-export default Plant;
+const PlantWithState = connect(
+  (state) => ({ isEditing: state.app.isEditing })
+)(Plant);
+
+export { PlantWithState as Plant, Plant as PlantWithoutState };

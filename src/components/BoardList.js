@@ -4,7 +4,6 @@ import Board from './Board';
 import BoardsQuery from '../graphql/BoardsQuery';
 import PropTypes from 'prop-types';
 
-
 function BoardList ( { data: { error, loading, boards }}) {
   if (error) {
     return <p>{error}</p>;
@@ -29,4 +28,4 @@ BoardList.propTypes = {
 
 const BoardListWithData = graphql(BoardsQuery)(BoardList);
 
-export default BoardListWithData;
+export { BoardListWithData as BoardList, BoardList as BoardListWithoutData };

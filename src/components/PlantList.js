@@ -1,6 +1,6 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
-import Plant from './Plant';
+import { Plant } from './Plant';
 import PlantsQuery from '../graphql/PlantsQuery';
 import PropTypes from 'prop-types';
 
@@ -29,4 +29,4 @@ PlantList.propTypes = {
 
 const PlantListWithData = graphql(PlantsQuery)(PlantList);
 
-export default PlantListWithData;
+export { PlantListWithData as PlantList, PlantList as PlantListWithoutData };

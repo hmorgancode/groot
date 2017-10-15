@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { NavBar } from './components/NavBar';
 import { ModalConductor } from './components/ModalConductor';
-import PlantList from './components/PlantList';
+import { PlantList } from './components/PlantList';
 // import AddPlantForm from './components/AddPlantForm';
-import BoardList from './components/BoardList';
+import { BoardList } from './components/BoardList';
 // import logo from './logo.svg';
 import './App.css';
 
