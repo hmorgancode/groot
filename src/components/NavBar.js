@@ -1,8 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { goToPlants, goToBoards, openModal, toggleEditMode } from '../redux/actionTypes';
+import PropTypes from 'prop-types';
 
 class NavBar extends React.Component {
+
+  static propTypes = {
+    activePage: PropTypes.string.isRequired,
+    isEditing: PropTypes.bool.isRequired,
+    handleOpenModal: PropTypes.func.isRequired,
+    handleGoToPlants: PropTypes.func.isRequired,
+    handleGoToBoards: PropTypes.func.isRequired,
+    toggleEditMode: PropTypes.func.isRequired
+  }
 
   isActiveTab = (tabName) => {
     return tabName === this.props.activePage ? 'is-active' : '';

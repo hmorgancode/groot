@@ -4,6 +4,12 @@ import { mount } from 'enzyme';
 import { AddPlantModalWithoutState as AddPlantModal } from './AddPlantModal';
 
 const noop = () => null;
+// lets us wait for async calls resulting from Enzyme input
+const asyncNoop = async () => new Promise((resolve) => {
+  setTimeout(() => {
+    resolve();
+  }, 0);
+});
 const testData = {
   boards: [
     { _id: 'testDataId', sensors: [{ _id: 'sensor1Id' }, { _id: 'sensor2Id' }, { _id: 'sensor3Id' }] }
@@ -114,40 +120,42 @@ test('keeps track of selected sensor ids', () => {
 test('submits on click when given required form data', () => {
   // Types are enforced by the inputs and the server has to validate anyways
   // so just check that we require name and board to submit.
-  const spy = jest.fn().mockImplementation(() => Promise.resolve());
-  const modal = mount(<AddPlantModal data={testData} mutate={spy} handleCloseModal={noop}/>);
+  const spyMutate = jest.fn().mockImplementation(async () => Promise.resolve());
+  const modal = mount(<AddPlantModal data={testData} mutate={spyMutate} handleCloseModal={noop}/>);
   const submitButton = modal.find('.js-submit-form');
   submitButton.simulate('click');
-  expect(spy).not.toHaveBeenCalled();
+  expect(spyMutate).not.toHaveBeenCalled();
   modal.setState({ name: 'foo'});
   submitButton.simulate('click');
-  expect(spy).not.toHaveBeenCalled();
+  expect(spyMutate).not.toHaveBeenCalled();
   modal.setState({ name: '', selectedBoardId: null });
   submitButton.simulate('click');
-  expect(spy).not.toHaveBeenCalled();
+  expect(spyMutate).not.toHaveBeenCalled();
   modal.setState({ name: 'foo', selectedBoardId: 'testDataId' });
   submitButton.simulate('click');
-  expect(spy).toHaveBeenCalled();
+  expect(spyMutate).toHaveBeenCalled();
 });
 
-test(`uploads thumbnail on form submission when a thumbnail is provided`, () => {
-  const spyAxios = jest.fn().mockImplementation(() => Promise.resolve({ data: 'url/img.jpg' }));
-  const spyMutate = jest.fn();
-  const modal = mount(<AddPlantModal data={testData} axios={{ post: spyAxios }}
+// Note: This is the only test that has to be async, since it's the only test in which
+// axios.post (which handleFormSubmit awaits) is called.
+test('uploads thumbnail on form submission when a thumbnail is provided', async () => {
+  const spyAxios = () => null;
+  spyAxios.post = jest.fn().mockImplementation(async () => Promise.resolve({ data: 'url/img.jpg' }));
+  const spyMutate = jest.fn().mockImplementation(async () => Promise.resolve());
+  const modal = mount(<AddPlantModal data={testData} axios={spyAxios}
                                      mutate={spyMutate} handleCloseModal={noop} />);
   modal.setState({ name: 'foo', selectedBoardId: 'testDataId', imageData: 'img.jpg' });
   modal.find('.js-submit-form').simulate('click');
-  expect(spyAxios).toHaveBeenCalled();
-  // Why is spyMutate called when it's called before spyAxios, but not when it's called after spyAxios?
-  // figure this out after sleeping
-  // expect(spyMutate).toHaveBeenCalled();
-  // expect(spyMutate.mock.calls[0]).toEqual(expect.objectContaining({
-  //   variables: expect.objectContaining({
-  //     name: 'foo',
-  //     board: 'testDataId',
-  //     thumbnail: 'url/img.jpg'
-  //   })
-  // }));
+  await asyncNoop();
+  expect(spyAxios.post).toHaveBeenCalled();
+  expect(spyMutate).toHaveBeenCalled();
+  expect(spyMutate.mock.calls[0][0]).toEqual(expect.objectContaining({
+    variables: expect.objectContaining({
+      name: 'foo',
+      board: 'testDataId',
+      thumbnail: 'url/img.jpg'
+    })
+  }));
 });
 
 test('closes after submission', () => {

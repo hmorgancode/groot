@@ -2,8 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AddPlantModal } from './AddPlantModal';
 import { AddBoardModal } from './AddBoardModal';
+import PropTypes from 'prop-types';
 
 class ModalConductor extends React.Component {
+
+  static propTypes = {
+    isActive: PropTypes.bool.isRequired,
+    modalType: PropTypes.string.isRequired
+  }
+
   render() {
     if (!this.props.isActive) {
       return null;

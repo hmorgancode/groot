@@ -17,3 +17,18 @@ Object.assign = require('object-assign');
 global.requestAnimationFrame = function(callback) {
   setTimeout(callback, 0);
 };
+
+// Swap out console.error with a version that filters out specific errors.
+const error = console.error;
+console.error = function() {
+  if (typeof arguments[0] !== 'string') {
+    return error.apply(console, arguments);
+  }
+  // Individual unit tests don't pass unused props, so ignore errors
+  // where a required prop isn't provided
+  if (arguments[0].includes('Warning: Failed prop type:') &&
+      arguments[0].includes('but its value is `undefined`.')) {
+    return;
+  }
+  return error.apply(console, arguments);
+};

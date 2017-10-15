@@ -5,9 +5,23 @@ import { closeModal } from '../redux/actionTypes'
 import axios from 'axios';
 import PlantsQuery from '../graphql/PlantsQuery';
 import { ModalWithoutState, Modal } from './Modal';
+import PropTypes from 'prop-types';
 
 function createAddPlantModal(Modal) {
   return class AddPlantModal extends React.Component {
+
+    static propTypes = {
+      mutate: PropTypes.func.isRequired,
+      handleCloseModal: PropTypes.func.isRequired,
+      axios: PropTypes.func.isRequired
+    }
+
+    // Shim so that we can provide a substitute during unit testing.
+    static defaultProps = {
+      axios: axios
+      // we also shim in mutate during testing, but that's provided by Apollo
+    }
+
     state = {
       requestInProgress: false,
       // Required:
@@ -19,12 +33,6 @@ function createAddPlantModal(Modal) {
       imageName: '',
       notes: '',
       selectedSensors: {}
-    }
-
-    // Shim so that we can provide a substitute during unit testing.
-    static defaultProps = {
-      axios: axios
-      // we also shim in mutate during testing, but that's provided by Apollo
     }
 
     // Upload the image (if provided) and submit the plant's data
@@ -49,6 +57,7 @@ function createAddPlantModal(Modal) {
 
       const selectedBoard = this.getSelectedBoard();
       // do graphQL mutation!
+      // await? for now just call this async function then close immediately
       this.props.mutate({
         variables: {
           name: this.state.name,

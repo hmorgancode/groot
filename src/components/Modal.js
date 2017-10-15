@@ -6,6 +6,14 @@ import PropTypes from 'prop-types';
  * HOC for modals. For modal use, see ModalConductor
  */
 class Modal extends React.Component {
+
+  static propTypes = {
+    title: PropTypes.string,
+    body: PropTypes.element,
+    foot: PropTypes.element,
+    handleCloseModal: PropTypes.func.isRequired
+  }
+
   render() {
     const { title, body, foot } = this.props;
     return (
@@ -28,12 +36,6 @@ class Modal extends React.Component {
       </div>
     );
   }
-}
-
-Modal.propTypes = {
-  title: PropTypes.string,
-  body: PropTypes.element,
-  foot: PropTypes.element
 }
 
 const ModalWithState = connect(

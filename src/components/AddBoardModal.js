@@ -5,6 +5,7 @@ import BoardsQuery from '../graphql/BoardsQuery';
 import { gql, graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
 import { closeModal } from '../redux/actionTypes';
+import PropTypes from 'prop-types';
 
 function createAddBoardModal(Modal) {
   /**
@@ -12,6 +13,19 @@ function createAddBoardModal(Modal) {
    * that serves as a hub for plants and their sensors)
    */
   return class AddBoardModal extends React.Component {
+
+    static propTypes = {
+      mutate: PropTypes.func.isRequired,
+      handleCloseModal: PropTypes.func.isRequired,
+      axios: PropTypes.func.isRequired
+    }
+
+    // Shim so that we can provide a substitute during unit testing.
+    static defaultProps = {
+      axios: axios
+      // we also shim in mutate during testing, but that's provided by Apollo
+    }
+
     state = {
       // Required:
       location: '',
@@ -20,12 +34,6 @@ function createAddBoardModal(Modal) {
       isRemote: false,
       imageName: '',
       imageData: null
-    }
-
-    // Shim so that we can provide a substitute during unit testing.
-    static defaultProps = {
-      axios: axios
-      // we also shim in mutate during testing, but that's provided by Apollo
     }
 
     handleSelectImage = (e) => {
@@ -127,6 +135,7 @@ function createAddBoardModal(Modal) {
     }
   }
 }
+
 
 const addBoardMutation = gql`
   mutation addBoard(

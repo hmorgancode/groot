@@ -1,9 +1,8 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
-// import { connect } from 'react-redux';
 import Plant from './Plant';
 import PlantsQuery from '../graphql/PlantsQuery';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 
 
 function PlantList({ data: { error, loading, plants }}) {
@@ -20,10 +19,14 @@ function PlantList({ data: { error, loading, plants }}) {
   );
 }
 
-const PlantListWithData = graphql(PlantsQuery)(PlantList);
+PlantList.propTypes = {
+  data: PropTypes.shape({
+    error: PropTypes.object,
+    loading: PropTypes.bool.isRequired,
+    plants: PropTypes.arrayOf(PropTypes.object).isRequired
+  })
+};
 
-// const PlantListWithDataAndState = connect(
-//   (state) => ({ modalIsActive: state.modal.isActive })
-// )(PlantListWithData);
+const PlantListWithData = graphql(PlantsQuery)(PlantList);
 
 export default PlantListWithData;

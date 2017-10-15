@@ -9,6 +9,17 @@ import { Collapse } from 'react-collapse';
 
 class Plant extends React.Component {
 
+  static propTypes = {
+    _id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    thumbnail: PropTypes.string,
+    board: PropTypes.object.isRequired,
+    altName: PropTypes.string,
+    tags: PropTypes.arrayOf(PropTypes.string),
+    notes: PropTypes.string,
+    sensors: PropTypes.arrayOf(PropTypes.object)
+  }
+
   state = {
     expanded: false
   };
@@ -58,16 +69,5 @@ class Plant extends React.Component {
     );
   }
 }
-
-Plant.propTypes = {
-  _id: PropTypes.string,
-  name: PropTypes.string,
-  thumbnail: PropTypes.string,
-  board: PropTypes.object,
-  altName: PropTypes.string,
-  tags: PropTypes.arrayOf(PropTypes.string),
-  notes: PropTypes.string,
-  sensors: PropTypes.array
-};
 
 export default Plant;

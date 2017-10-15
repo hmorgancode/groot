@@ -3,6 +3,12 @@ import { mount } from 'enzyme';
 import { AddBoardModalWithoutState as AddBoardModal } from './AddBoardModal';
 
 const noop = () => null;
+// lets us wait for async calls resulting from Enzyme input
+const asyncNoop = async () => new Promise((resolve) => {
+  setTimeout(() => {
+    resolve();
+  }, 0);
+});
 
 test('Modal renders', () => {
   mount(<AddBoardModal />);
@@ -61,12 +67,23 @@ test('submits on click when given required form data', () => {
   expect(spy).toHaveBeenCalled();
 });
 
-test(`uploads thumbnail on form submission when a thumbnail is provided`, () => {
-  const spyAxios = jest.fn().mockImplementation(() => Promise.resolve({ data: 'url/img.jpg' }));
-  const modal = mount(<AddBoardModal axios={{ post: spyAxios }} mutate={noop} handleCloseModal={noop} />);
+// see the equivalent test in AddPlantModal for why this is the only async test.
+test(`uploads thumbnail on form submission when a thumbnail is provided`, async () => {
+  const spyAxios = () => null;
+  spyAxios.post = jest.fn().mockImplementation(() => Promise.resolve({ data: 'url/img.jpg' }));
+  const spyMutate = jest.fn().mockImplementation(async () => Promise.resolve());
+  const modal = mount(<AddBoardModal axios={spyAxios} mutate={spyMutate} handleCloseModal={noop} />);
   modal.setState({ location: 'foo', imageData: 'img.jpg' });
   modal.find('.js-submit-form').simulate('click');
-  expect(spyAxios).toHaveBeenCalled();
+  await asyncNoop();
+  expect(spyAxios.post).toHaveBeenCalled();
+  expect(spyMutate).toHaveBeenCalled();
+  expect(spyMutate.mock.calls[0][0]).toEqual(expect.objectContaining({
+    variables: expect.objectContaining({
+      location: 'foo',
+      thumbnail: 'url/img.jpg'
+    })
+  }));
 });
 
 test('closes after submission', () => {
