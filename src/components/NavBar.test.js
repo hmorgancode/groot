@@ -35,3 +35,22 @@ test('Enables edit mode when add/remove button is clicked', () => {
   navBar.find('#js-nav-edit').simulate('click');
   expect(spy).toHaveBeenCalled();
 });
+
+test('Displays Add Item button when in edit mode', () => {
+  const navBar = shallow(<NavBar isEditing={false} />);
+  expect(navBar.find('.add-item-button').length).toBe(0);
+  navBar.setProps({ isEditing: true });
+  expect(navBar.find('.add-item-button').length).toBe(1);
+});
+
+test('Clicking Add Item button launches contextually appropriate modal', () => {
+  const spy = jest.fn();
+  const navBar = shallow(<NavBar isEditing={true} activePage='PLANTS' handleOpenModal={spy} />);
+  navBar.find('.add-item-button').simulate('click');
+  expect(spy.mock.calls[0][0]).toBe('ADD_PLANT');
+  navBar.setProps({ activePage: 'BOARDS' });
+  navBar.find('.add-item-button').simulate('click');
+  expect(spy.mock.calls[1][0]).toBe('ADD_BOARD');
+
+});
+

@@ -18,26 +18,27 @@ class NavBar extends React.Component {
     return tabName === this.props.activePage ? 'is-active' : '';
   }
 
-  // openModalByContext = () => {
-  //   // @TODO: move ADD_PLANT and ADD_BOARD strings to action creators?
-  //   // as-is you've got them here and in ModalConductor, communicating via
-  //   // redux, which feels weird.
-  //   // (same with 'PLANTS' and 'BOARDS' down below)
-  //   switch (this.props.activePage) {
-  //     case 'PLANTS':
-  //       this.props.handleOpenModal('ADD_PLANT');
-  //       return;
-  //     case 'BOARDS':
-  //       this.props.handleOpenModal('ADD_BOARD');
-  //       return;
-  //     default:
-  //       return;
-  //   }
-  // }
+  openModalByContext = () => {
+    // @TODO: move ADD_PLANT and ADD_BOARD strings to action creators?
+    // as-is you've got them here and in ModalConductor, communicating via
+    // redux, which feels weird.
+    // (same with 'PLANTS' and 'BOARDS' down below)
+    switch (this.props.activePage) {
+      case 'PLANTS':
+        this.props.handleOpenModal('ADD_PLANT');
+        return;
+      case 'BOARDS':
+        this.props.handleOpenModal('ADD_BOARD');
+        return;
+      default:
+        return;
+    }
+  }
 
   render() {
     return (
-      <div id="nav-bar" className="tabs is-toggle is-fullwidth">
+      <div id="nav-bar">
+      <div className="tabs is-toggle is-fullwidth">
         <ul>
           <li id="js-nav-plants" onClick={() => { this.props.handleGoToPlants(); } } className={this.isActiveTab('PLANTS')}>
             <a>
@@ -51,13 +52,22 @@ class NavBar extends React.Component {
               <span>Boards</span>
             </a>
           </li>
-          <li id="js-nav-edit" onClick={ this.props.toggleEditMode } className={this.props.isEditing ? 'editing' : ''} >
+          <li id="js-nav-edit" className={`${this.props.isEditing ? 'editing' : ''}`} onClick={ this.props.toggleEditMode } >
             <a>
               <span className="icon"><i className="fa fa-cogs"></i></span>
               <span>Add/Remove</span>
             </a>
           </li>
         </ul>
+      </div>
+      { this.props.isEditing &&
+      <div className="add-item-button" onClick={this.openModalByContext} >
+        <a className="button is-success">
+          <span className="icon"><i className="fa fa-plus"></i></span>
+          <span>Add</span>
+        </a>
+      </div>
+      }
       </div>
     );
   }
