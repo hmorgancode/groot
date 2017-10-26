@@ -14,7 +14,9 @@ const initialState = {
   },
   modal: {
     modalType: 'ADD_PLANT',
-    isActive: false
+    isActive: false,
+    // the id of the item we're editing, if this is an edit modal
+    modalTarget: null
   }
 };
 
@@ -37,9 +39,12 @@ function modalReducer(state = initialState.modal, action) {
       if (state.isActive) {
         return state;
       }
-      return { ...state, isActive: true, modalType: action.modalType };
+      return { ...state, isActive: true, modalType: action.modalType, modalTarget: action.modalTarget };
     case CLOSE_MODAL:
-      return { ...state, isActive: false } ;
+      if (!state.isActive) {
+        return state;
+      }
+      return { ...state, isActive: false, modalTarget: null } ;
     default:
       return state;
   }

@@ -1,9 +1,9 @@
 import React from 'react';
-import WaterLevelMeter from './WaterLevelMeter';
 import { presets } from 'react-motion';
 import PropTypes from 'prop-types';
 import { Collapse } from 'react-collapse';
 import { connect } from 'react-redux';
+import { setEditModalTarget, openModal } from '../redux/actionTypes';
 
 class Plant extends React.Component {
 
@@ -22,10 +22,17 @@ class Plant extends React.Component {
 
   state = {
     expanded: false
-  };
+  }
 
   expandBox = () => {
     this.setState({ expanded: !this.state.expanded });
+  }
+
+  handleOpenEditModal = (e) => {
+    // check for null for a test
+    e && e.stopPropagation();
+    this.props.setEditModalTarget(this.props._id);
+    this.props.openEditModal();
   }
 
   render() {
@@ -60,18 +67,28 @@ class Plant extends React.Component {
         </div>
 
         <div className="media-right">
-          <WaterLevelMeter percentage={Math.random() * 100} />
-          {/* placeholder for <WaterMeter plant={plant} /> */ }
+          { this.props.isEditing &&
+            <div className="js-edit-plant" onClick={this.handleOpenEditModal}>
+              <button className="icon"><i className="fa fa-edit"></i></button>
+            </div>
+          }
+          {/*<WaterLevelMeter percentage={Math.random() * 100} />*/}
         </div>
-
-
       </article>
     );
   }
 }
 
 const PlantWithState = connect(
-  (state) => ({ isEditing: state.app.isEditing })
+  (state) => ({ isEditing: state.app.isEditing }),
+  (dispatch) => ({
+    setEditModalTarget(_id) {
+      dispatch(setEditModalTarget(_id));
+    },
+    openEditModal() {
+      dispatch(openModal('EDIT_PLANT'));
+    }
+  })
 )(Plant);
 
 export { PlantWithState as Plant, Plant as PlantWithoutState };

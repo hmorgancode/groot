@@ -19,3 +19,19 @@ test('expands plant when clicked', () => {
   plant.find('.js-plant').simulate('click');
   expect(plant.state().expanded).toBe(true);
 });
+
+test('displays Edit button when in edit mode', () => {
+  const plant = shallow(<Plant {...testData} isEditing={false} />);
+  expect(plant.find('.js-edit-plant').length).toBe(0);
+  plant.setProps({ isEditing: true });
+  expect(plant.find('.js-edit-plant').length).toBe(1);
+});
+
+test('clicking edit button opens Edit modal with plant id', () => {
+  const spyOpen = jest.fn(), spySet = jest.fn();
+  const plant = shallow(<Plant {...testData} isEditing={true} setEditModalTarget={spySet} openEditModal={spyOpen} />);
+  plant.find('.js-edit-plant').simulate('click');
+  expect(spySet).toHaveBeenCalled();
+  expect(spySet.mock.calls[0][0]).toBe(testData._id);
+  expect(spyOpen).toHaveBeenCalled();
+});

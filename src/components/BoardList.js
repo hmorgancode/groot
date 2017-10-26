@@ -1,6 +1,6 @@
 import React from 'react';
 import { graphql } from 'react-apollo';
-import Board from './Board';
+import { Board } from './Board';
 import BoardsQuery from '../graphql/BoardsQuery';
 import PropTypes from 'prop-types';
 

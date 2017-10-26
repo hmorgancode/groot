@@ -8,7 +8,8 @@ class ModalConductor extends React.Component {
 
   static propTypes = {
     isActive: PropTypes.bool.isRequired,
-    modalType: PropTypes.string.isRequired
+    modalType: PropTypes.string.isRequired,
+    modalTarget: PropTypes.string
   }
 
   render() {
@@ -29,7 +30,7 @@ class ModalConductor extends React.Component {
 }
 
 const ModalConductorWithState = connect(
-  (state) => ({ isActive: state.modal.isActive, modalType: state.modal.modalType })
+  (state) => ({ isActive: state.modal.isActive, modalType: state.modal.modalType, modalTarget: state.modal.modalTarget })
 )(ModalConductor);
 
 export { ModalConductorWithState as ModalConductor, ModalConductor as ModalConductorWithoutState };

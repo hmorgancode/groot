@@ -17,10 +17,11 @@ export function goToBoards() {
 //// ModalConductor
 
 export const OPEN_MODAL = 'OPEN_MODAL';
-export function openModal(modalType) {
+export function openModal(modalType, modalTarget) {
   return {
     type: OPEN_MODAL,
-    modalType
+    modalType,
+    modalTarget
   };
 }
 

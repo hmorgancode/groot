@@ -1,8 +1,7 @@
 import React from 'react';
-// import { gql, graphql } from 'react-apollo';
-// import Truncate from 'react-truncate';
 import { Collapse } from 'react-collapse';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 class Board extends React.Component {
 
@@ -21,9 +20,14 @@ class Board extends React.Component {
     this.setState({ expanded: !this.state.expanded });
   }
 
+  handleOpenEditModal = (e) => {
+    e && e.stopPropagation();
+    this.props.openEditModal(this.props._id);
+  }
+
   render() {
     return (
-      <article key={ this.props._id } className="media box" onClick={ this.expandBox }>
+      <article key={ this.props._id } className="js-board media box" onClick={ this.expandBox }>
         <div className="media-left">
           <img
             className="image is-64x64"
@@ -42,9 +46,22 @@ class Board extends React.Component {
             { this.props.sensors.map((sensor) => <li key={sensor._id}>{`Pin ${sensor.dataPin} - ${sensor.type}`}</li>) }
           </Collapse>
         </div>
+
+        <div className="media-right">
+          { this.props.isEditing &&
+            <div className="js-edit-board" onClick={this.handleOpenEditModal}>
+              <button className="icon"><i className="fa fa-edit"></i></button>
+            </div>
+          }
+        </div>
       </article>
     );
   }
 }
 
-export default Board;
+const BoardWithState = connect(
+  (state) => ({ isEditing: state.app.isEditing })
+)(Board);
+
+
+export { Board as BoardWithoutState, BoardWithState as Board };

@@ -274,6 +274,7 @@ let AddPlantModal = createAddPlantModal(Modal);
 
 AddPlantModal = compose(
   graphql(addPlantQuery),
+  graphql(PlantsQuery),
   graphql(addPlantMutation),
   connect(
     null, // not mapping state to any props in this component
