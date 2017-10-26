@@ -139,7 +139,7 @@ function createAddPlantModal(Modal) {
 
     render() {
       return (
-        <Modal title="Add Plant"
+        <Modal title={`${this.props.target ? 'Edit' : 'Add' } Plant`}
           body={
           <div className="modal-form">
             <div className="control">
