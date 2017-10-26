@@ -3,7 +3,7 @@ import { presets } from 'react-motion';
 import PropTypes from 'prop-types';
 import { Collapse } from 'react-collapse';
 import { connect } from 'react-redux';
-import { setEditModalTarget, openModal } from '../redux/actionTypes';
+import { openModal } from '../redux/actionTypes';
 
 class Plant extends React.Component {
 
@@ -31,8 +31,7 @@ class Plant extends React.Component {
   handleOpenEditModal = (e) => {
     // check for null for a test
     e && e.stopPropagation();
-    this.props.setEditModalTarget(this.props._id);
-    this.props.openEditModal();
+    this.props.openEditModal(this.props._id);
   }
 
   render() {
@@ -82,11 +81,8 @@ class Plant extends React.Component {
 const PlantWithState = connect(
   (state) => ({ isEditing: state.app.isEditing }),
   (dispatch) => ({
-    setEditModalTarget(_id) {
-      dispatch(setEditModalTarget(_id));
-    },
-    openEditModal() {
-      dispatch(openModal('EDIT_PLANT'));
+    openEditModal(_id) {
+      dispatch(openModal('ADD_PLANT', _id));
     }
   })
 )(Plant);

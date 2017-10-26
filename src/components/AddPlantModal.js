@@ -13,7 +13,9 @@ function createAddPlantModal(Modal) {
     static propTypes = {
       mutate: PropTypes.func.isRequired,
       handleCloseModal: PropTypes.func.isRequired,
-      axios: PropTypes.func.isRequired
+      axios: PropTypes.func.isRequired,
+      // ID of the plant to populate the form with (if this isn't a new plant)
+      target: PropTypes.string
     }
 
     // Shim so that we can provide a substitute during unit testing.
@@ -22,17 +24,37 @@ function createAddPlantModal(Modal) {
       // we also shim in mutate during testing, but that's provided by Apollo
     }
 
-    state = {
-      requestInProgress: false,
-      // Required:
-      name: '',
-      selectedBoardId: null,
-      // Optional:
-      altName: '',
-      imageData: null,
-      imageName: '',
-      notes: '',
-      selectedSensors: {}
+    // Set default state depending on whether or not the form should
+    // be populated with an existing plant's data
+    constructor(props) {
+      super(props);
+      if (!props.target) {
+        this.state = {
+          requestInProgress: false,
+          // Required:
+          name: '',
+          selectedBoardId: null,
+          // Optional:
+          altName: '',
+          imageData: null,
+          imageName: '',
+          notes: '',
+          selectedSensors: {}
+        }
+        return;
+      }
+      // Populate using the existing plant's data:
+      const targetPlant = props.plantsData.plants.find((plant) => plant._id === props.target);
+      this.state = {
+        requestInProgress: false,
+        name: targetPlant.name,
+        selectedBoardId: targetPlant.board._id,
+        altName: targetPlant.altName,
+        imageData: null,
+        imageName: '',
+        notes: targetPlant.notes,
+        selectedSensors: { ...targetPlant.sensors.map((plant) => plant._id) }
+      }
     }
 
     // Upload the image (if provided) and submit the plant's data
@@ -102,7 +124,8 @@ function createAddPlantModal(Modal) {
     }
 
     getSelectedBoard = () => {
-      return this.props.data.boards.find((board) => board._id === this.state.selectedBoardId);
+      // debugger;
+      return this.props.boardsData.boards.find((board) => board._id === this.state.selectedBoardId);
     }
 
     handleSelectImage = (e) => {
@@ -162,14 +185,14 @@ function createAddPlantModal(Modal) {
             <div className="control">
               <label className="label">Board</label>
               <div className="select">
-                <select className="js-board-select" onChange={(e) => { this.setState({
+                <select className="js-board-select" defaultValue={this.state.selectedBoardId} onChange={(e) => { this.setState({
                   selectedBoardId: e.target.value === 'null' ? null : e.target.value,
                   selectedSensors: {}
                 }) } }>
                   <option value="null">Select a board:</option>
                   {
-                    this.props.data && this.props.data.boards &&
-                    this.props.data.boards.map((board, index) => {
+                    this.props.boardsData && this.props.boardsData.boards &&
+                    this.props.boardsData.boards.map((board, index) => {
                       return <option key={ board._id } value={ board._id }>{ board.location }</option>
                     })
                   }
@@ -273,8 +296,8 @@ const addPlantQuery = gql`
 let AddPlantModal = createAddPlantModal(Modal);
 
 AddPlantModal = compose(
-  graphql(addPlantQuery),
-  graphql(PlantsQuery),
+  graphql(addPlantQuery, { name: 'boardsData' }),
+  graphql(PlantsQuery, { name: 'plantsData' }),
   graphql(addPlantMutation),
   connect(
     null, // not mapping state to any props in this component

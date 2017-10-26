@@ -27,6 +27,13 @@ test('closes when the cancel button is clicked', () => {
   expect(mockClose).toHaveBeenCalled();
 });
 
+test('populates form input with preexisting data if editing a plant', () => {
+
+});
+
+// Test that a populated form selects the correct board on the dropdown on
+// page load?
+
 test('stores text input in state', () => {
   const modal = mount(<AddPlantModal />);
   modal.find('.js-name').simulate('change', { target: { value: 'fooName' } });
@@ -63,7 +70,7 @@ test('stores file input in state as a name string and a FormData object', () => 
 });
 
 test(`stores the selected board's id in state`, () => {
-  const modal = mount(<AddPlantModal data={testData} />);
+  const modal = mount(<AddPlantModal boardsData={testData} />);
   const boardSelect = modal.find('.js-board-select');
   boardSelect.simulate('change', {
     target: {
@@ -80,7 +87,7 @@ test(`stores the selected board's id in state`, () => {
 });
 
 test(`displays a board's sensors when the board is selected`, () => {
-  const modal = mount(<AddPlantModal data={testData} />);
+  const modal = mount(<AddPlantModal boardsData={testData} />);
   expect(modal.find('.js-sensor').length).toBe(0);
   modal.find('.js-board-select').simulate('change', {
     target: {
@@ -91,7 +98,7 @@ test(`displays a board's sensors when the board is selected`, () => {
 });
 
 test('keeps track of selected sensor ids', () => {
-  const modal = mount(<AddPlantModal data={testData} />);
+  const modal = mount(<AddPlantModal boardsData={testData} />);
   modal.find('.js-board-select').simulate('change', {
     target: {
       value: 'testDataId'
@@ -121,7 +128,7 @@ test('submits on click when given required form data', () => {
   // Types are enforced by the inputs and the server has to validate anyways
   // so just check that we require name and board to submit.
   const spyMutate = jest.fn().mockImplementation(async () => Promise.resolve());
-  const modal = mount(<AddPlantModal data={testData} mutate={spyMutate} handleCloseModal={noop}/>);
+  const modal = mount(<AddPlantModal boardsData={testData} mutate={spyMutate} handleCloseModal={noop}/>);
   const submitButton = modal.find('.js-submit-form');
   submitButton.simulate('click');
   expect(spyMutate).not.toHaveBeenCalled();
@@ -142,7 +149,7 @@ test('uploads thumbnail on form submission when a thumbnail is provided', async 
   const spyAxios = () => null;
   spyAxios.post = jest.fn().mockImplementation(async () => Promise.resolve({ data: 'url/img.jpg' }));
   const spyMutate = jest.fn().mockImplementation(async () => Promise.resolve());
-  const modal = mount(<AddPlantModal data={testData} axios={spyAxios}
+  const modal = mount(<AddPlantModal boardsData={testData} axios={spyAxios}
                                      mutate={spyMutate} handleCloseModal={noop} />);
   modal.setState({ name: 'foo', selectedBoardId: 'testDataId', imageData: 'img.jpg' });
   modal.find('.js-submit-form').simulate('click');
@@ -160,7 +167,7 @@ test('uploads thumbnail on form submission when a thumbnail is provided', async 
 
 test('closes after submission', () => {
   const mockClose = jest.fn();
-  const modal = mount(<AddPlantModal data={testData} mutate={noop} handleCloseModal={mockClose} />);
+  const modal = mount(<AddPlantModal boardsData={testData} mutate={noop} handleCloseModal={mockClose} />);
   modal.setState({ name: 'foo', selectedBoardId: 'testDataId' });
   modal.find('.js-submit-form').simulate('click');
   expect(mockClose).toHaveBeenCalled();

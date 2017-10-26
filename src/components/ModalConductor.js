@@ -19,9 +19,9 @@ class ModalConductor extends React.Component {
 
     switch(this.props.modalType) {
       case 'ADD_PLANT':
-        return <div id="js-conductor-add-plant"><AddPlantModal /></div>;
+        return <div id="js-conductor-add-plant"><AddPlantModal target={this.props.modalTarget} /></div>;
       case 'ADD_BOARD':
-        return <div id="js-conductor-add-board"><AddBoardModal /></div>;
+        return <div id="js-conductor-add-board"><AddBoardModal target={this.props.modalTarget} /></div>;
       default:
         return null;
     }

@@ -24,7 +24,6 @@ export function openModal(modalType, modalTarget) {
     modalTarget
   };
 }
-
 export const CLOSE_MODAL = 'CLOSE_MODAL';
 export function closeModal() {
   return {

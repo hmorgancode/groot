@@ -28,10 +28,9 @@ test('displays Edit button when in edit mode', () => {
 });
 
 test('clicking edit button opens Edit modal with plant id', () => {
-  const spyOpen = jest.fn(), spySet = jest.fn();
-  const plant = shallow(<Plant {...testData} isEditing={true} setEditModalTarget={spySet} openEditModal={spyOpen} />);
+  const spy = jest.fn();
+  const plant = shallow(<Plant {...testData} isEditing={true} openEditModal={spy} />);
   plant.find('.js-edit-plant').simulate('click');
-  expect(spySet).toHaveBeenCalled();
-  expect(spySet.mock.calls[0][0]).toBe(testData._id);
-  expect(spyOpen).toHaveBeenCalled();
+  expect(spy).toHaveBeenCalled();
+  expect(spy.mock.calls[0][0]).toBe(testData._id);
 });

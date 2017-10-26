@@ -155,6 +155,39 @@ const typeDefs = `
   }
 `;
 
+// you need each plant's board to have an _id that is actually
+// present in the list of boards.
+// So, create a list of existing board ids for plants to have.
+const boardIds = [ faker.random.uuid() ];
+let firstBoardCreated = false;
+
+// do you have this arguments order right?
+// the fourth is def. context, but not sure what else
+// the mocks are doin'
+function boardIdResolver(root, obj, args, context) {
+  // is root a plant? Then return one of the board IDs.
+  // (@TODO clean this up, you should probably just recursively check context.path)
+  if (context.rootValue.plants != null || context.path.prev.prev.key === 'createPlant') {
+    // (it looks like plants are all called first, so they'll all just
+    // have the first board. Maybe try and change that and randomize later
+    // if you really, really need it for your mocks.
+    // return boardIds[Math.floor(Math.random() * boardIds.length)];
+    return boardIds[0];
+  }
+  // Otherwise, is this the first board? Give it that initial mock ID so that
+  // all the plants actually point to a real board.
+  if (!firstBoardCreated && context.rootValue.boards != null) {
+    firstBoardCreated = true;
+    return boardIds[0];
+  }
+  // Otherwise, create a new unique ID and add it to the list of board IDs.
+  // (This might be redundant depending on the order in which our resolvers get
+  // called)
+  // boardIds.push(faker.random.uuid());
+  // return boardIds[boardIds.length - 1];
+  return faker.random.uuid();
+}
+
 const mocks = {
   Query: () => ({
     // arbitrarily get 5-12 plants/boards/sensors
@@ -174,7 +207,7 @@ const mocks = {
     sensors: () => new MockList([0, 5])
   }),
   Board: () => ({
-    _id: () => faker.random.uuid(),
+    _id: boardIdResolver,
     location: () => faker.lorem.word(),
     type: () => faker.random.word(),
     isRemote: () => faker.random.boolean(),
@@ -185,6 +218,8 @@ const mocks = {
     _id: () => faker.random.uuid(),
     type: () => faker.random.word()
   })
+  // you query createPlant, and the response isn't using your vanilla query resolvers,
+  // it's just doing wtf
 };
 
 const schema = makeExecutableSchema({ typeDefs });
