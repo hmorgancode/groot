@@ -217,6 +217,21 @@ const mocks = {
   Sensor: () => ({
     _id: () => faker.random.uuid(),
     type: () => faker.random.word()
+  }),
+  Mutation: () => ({
+    createPlant: (root, obj) => {
+      // reminder: obj is the object submitted.
+      // if this is supposed to be an updated, existing object, send it right back.
+      if (obj._id) {
+        return obj;
+      }
+      // if it's a new object, create a new _id and return the object
+      obj._id = faker.random.uuid();
+      return obj;
+    },
+    updatePlant: (root, obj) => {
+      return obj;
+    }
   })
   // you query createPlant, and the response isn't using your vanilla query resolvers,
   // it's just doing wtf

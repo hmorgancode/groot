@@ -11,7 +11,8 @@ function createAddPlantModal(Modal) {
   return class AddPlantModal extends React.Component {
 
     static propTypes = {
-      mutate: PropTypes.func.isRequired,
+      createPlant: PropTypes.func.isRequired,
+      updatePlant: PropTypes.func.isRequired,
       handleCloseModal: PropTypes.func.isRequired,
       axios: PropTypes.func.isRequired,
       // ID of the plant to populate the form with (if this isn't a new plant)
@@ -21,7 +22,7 @@ function createAddPlantModal(Modal) {
     // Shim so that we can provide a substitute during unit testing.
     static defaultProps = {
       axios: axios
-      // we also shim in mutate during testing, but that's provided by Apollo
+      // we also shim in createPlant during testing, but that's provided by Apollo
     }
 
     // Set default state depending on whether or not the form should
@@ -38,6 +39,7 @@ function createAddPlantModal(Modal) {
           altName: '',
           imageData: null,
           imageName: '',
+          uploadedImageName: '',
           notes: '',
           selectedSensors: {}
         }
@@ -45,6 +47,10 @@ function createAddPlantModal(Modal) {
       }
       // Populate using the existing plant's data:
       const targetPlant = props.plantsData.plants.find((plant) => plant._id === props.target);
+      // targetPlant.sensors.map returns an array, so you'll be unfolding the keys 0, 1, etc
+      // you'll need to unfold an object instead
+      // ...how do you get an object? reduce?
+      const selectedSensors = targetPlant.sensors.reduce((obj, sensor) => { obj[sensor._id] = true; return obj; }, {});
       this.state = {
         requestInProgress: false,
         name: targetPlant.name,
@@ -52,39 +58,55 @@ function createAddPlantModal(Modal) {
         altName: targetPlant.altName,
         imageData: null,
         imageName: '',
+        uploadedImageName: targetPlant.thumbnail,
         notes: targetPlant.notes,
-        selectedSensors: { ...targetPlant.sensors.map((plant) => plant._id) }
+        selectedSensors
       }
     }
 
     // Upload the image (if provided) and submit the plant's data
-    handleFormSubmit = async (e) => {
+    handleFormSubmit = async () => {
       if (this.state.name === '' || this.state.selectedBoardId == null) {
         return;
       }
 
       this.setState({ requestInProgress: true });
 
-      let uploadedImageName = '';
+      if (this.state.imageData) {
+        await this.handleUploadImage();
+      }
+
+      if (this.props.target) {
+        await this.handleUpdatePlant();
+      } else {
+        await this.handleCreatePlant();
+      }
+
+      this.setState({ requestInProgress: false });
+      this.props.handleCloseModal();
+    }
+
+    handleUploadImage = async () => {
       if (this.state.imageData) {
         try {
           const res = await this.props.axios.post('http://localhost:3000/image_upload', this.state.imageData);
-          uploadedImageName = res.data;
+          this.setState({ uploadedImageName: res.data });
         } catch (error) {
           this.setState({ error });
           console.error('An error occurred while uploading the thumbnail image.');
-          return;
         }
       }
+    }
 
+    handleCreatePlant = async () => {
       const selectedBoard = this.getSelectedBoard();
       // do graphQL mutation!
       // await? for now just call this async function then close immediately
-      this.props.mutate({
+      await this.props.createPlant({
         variables: {
           name: this.state.name,
           altName: this.state.altName,
-          thumbnail: uploadedImageName,
+          thumbnail: this.state.uploadedImageName,
           notes: this.state.notes,
           board: selectedBoard._id,
           sensors: Object.entries(this.state.selectedSensors).map(([key, value]) => key)
@@ -110,7 +132,7 @@ function createAddPlantModal(Modal) {
         //       .map((sensor) => ({ __typename: 'Sensor', type: sensor.type, _id: sensor._id }))
         //   }
         // },
-        update: (store, { data: { createPlant } })=> {
+        update: (store, { data: { createPlant } }) => {
           const data = store.readQuery({ query: PlantsQuery });
           // debugger;
           data.plants.push(createPlant);
@@ -119,8 +141,22 @@ function createAddPlantModal(Modal) {
           // debugger;
         }
       });
+    }
 
-      this.props.handleCloseModal();
+    handleUpdatePlant = async () => {
+      await this.props.updatePlant({
+        variables: {
+          _id: this.props.target,
+          name: this.state.name,
+          altName: this.state.altName,
+          thumbnail: this.state.uploadedImageName,
+          notes: this.state.notes,
+          board: this.getSelectedBoard()._id,
+          sensors: Object.entries(this.state.selectedSensors).map(([key, value]) => key)
+        }
+        // no need to include a manual update- apollo can tell we're updating a
+        // Plant with a specific ID that's present in our store.
+      });
     }
 
     getSelectedBoard = () => {
@@ -241,9 +277,9 @@ function createAddPlantModal(Modal) {
 
 // you name the mutation just for debugging purposes.
 // there's only one mutation, given to your component's props
-// as "mutate" (unless you do custom arguments)
-const addPlantMutation = gql`
-  mutation addPlant(
+// as "mutate" (unless you do custom arguments / wrap with multiple mutations)
+const createPlantMutation = gql`
+  mutation createPlant(
     $name: String!,
     $board: ID!
     $thumbnail: String,
@@ -279,7 +315,58 @@ const addPlantMutation = gql`
   }
 `;
 
-const addPlantQuery = gql`
+const updatePlantMutation = gql`
+  mutation updatePlant(
+    $_id: ID!,
+    $name: String!,
+    $board: ID!
+    $thumbnail: String,
+    $altName: String,
+    $tags: [String!],
+    $notes: String,
+    $sensors: [ID!]
+    ) {
+    updatePlant(
+      _id: $_id,
+      name: $name,
+      altName: $altName,
+      thumbnail: $thumbnail,
+      board: $board,
+      tags: $tags,
+      notes: $notes,
+      sensors: $sensors
+      ) {
+        _id
+        name
+        altName
+        thumbnail
+        board {
+          _id
+          location
+        }
+        tags
+        notes
+        sensors {
+          _id
+          type
+        }
+      }
+  }
+`;
+
+const deletePlantMutation = gql`
+  mutation deletePlant(
+    $_id: ID!
+  ) {
+    deletePlant (
+      _id: $_id
+    ) {
+      _id
+    }
+  }
+`;
+
+const createPlantQuery = gql`
   query AddPlantQuery {
     boards {
       _id
@@ -296,9 +383,11 @@ const addPlantQuery = gql`
 let AddPlantModal = createAddPlantModal(Modal);
 
 AddPlantModal = compose(
-  graphql(addPlantQuery, { name: 'boardsData' }),
+  graphql(createPlantQuery, { name: 'boardsData' }),
   graphql(PlantsQuery, { name: 'plantsData' }),
-  graphql(addPlantMutation),
+  graphql(createPlantMutation, { name: 'createPlant' }),
+  graphql(updatePlantMutation, { name: 'updatePlant' }),
+  graphql(deletePlantMutation, { name: 'deletePlant' }),
   connect(
     null, // not mapping state to any props in this component
     (dispatch) => ({

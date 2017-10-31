@@ -51,7 +51,7 @@ class Plant extends React.Component {
           <img
             className="image is-64x64"
             src={ this.props.thumbnail }
-            alt={ this.props.name }>
+            alt={ this.props.thumbnail ? this.props.name : '' }>
           </img>
         </div>
 

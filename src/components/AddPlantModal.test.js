@@ -10,11 +10,28 @@ const asyncNoop = async () => new Promise((resolve) => {
     resolve();
   }, 0);
 });
-const testData = {
+const testBoards = {
   boards: [
-    { _id: 'testDataId', sensors: [{ _id: 'sensor1Id' }, { _id: 'sensor2Id' }, { _id: 'sensor3Id' }] }
+    { _id: 'testBoardId', sensors: [{ _id: 'sensor1Id' }, { _id: 'sensor2Id' }, { _id: 'sensor3Id' }] }
   ]
 };
+const testTarget = 'testTargetId';
+const testPlants = { plants: [{
+  _id: 'testTargetId',
+  name: 'Test Target Plant',
+  board: {
+    _id: 'testBoardId'
+  },
+  thumbnail: '',
+  altName: 'testTargetAltName',
+  tags: [],
+  notes: 'testTargetNotes',
+  sensors: [{ _id: 'sensor1Id' }, { _id: 'sensor2Id' }]
+}]};
+
+///////////////////////////
+/// ADD + GENERAL TESTS ///
+///////////////////////////
 
 test('renders', () => {
   mount(<AddPlantModal />);
@@ -25,10 +42,6 @@ test('closes when the cancel button is clicked', () => {
   const modal = mount(<AddPlantModal handleCloseModal={mockClose} />);
   modal.find('.js-cancel-button').simulate('click');
   expect(mockClose).toHaveBeenCalled();
-});
-
-test('populates form input with preexisting data if editing a plant', () => {
-
 });
 
 // Test that a populated form selects the correct board on the dropdown on
@@ -70,14 +83,14 @@ test('stores file input in state as a name string and a FormData object', () => 
 });
 
 test(`stores the selected board's id in state`, () => {
-  const modal = mount(<AddPlantModal boardsData={testData} />);
+  const modal = mount(<AddPlantModal boardsData={testBoards} />);
   const boardSelect = modal.find('.js-board-select');
   boardSelect.simulate('change', {
     target: {
-      value: 'testDataId'
+      value: 'testBoardId'
     }
   });
-  expect(modal.state('selectedBoardId')).toBe('testDataId')
+  expect(modal.state('selectedBoardId')).toBe('testBoardId')
   boardSelect.simulate('change', {
     target: {
       value: 'null'
@@ -87,21 +100,21 @@ test(`stores the selected board's id in state`, () => {
 });
 
 test(`displays a board's sensors when the board is selected`, () => {
-  const modal = mount(<AddPlantModal boardsData={testData} />);
+  const modal = mount(<AddPlantModal boardsData={testBoards} />);
   expect(modal.find('.js-sensor').length).toBe(0);
   modal.find('.js-board-select').simulate('change', {
     target: {
-      value: 'testDataId'
+      value: 'testBoardId'
     }
   });
   expect(modal.find('.js-sensor-checkbox').length).toBe(3);
 });
 
 test('keeps track of selected sensor ids', () => {
-  const modal = mount(<AddPlantModal boardsData={testData} />);
+  const modal = mount(<AddPlantModal boardsData={testBoards} />);
   modal.find('.js-board-select').simulate('change', {
     target: {
-      value: 'testDataId'
+      value: 'testBoardId'
     }
   });
   expect(modal.state('selectedSensors')).toEqual({});
@@ -124,51 +137,104 @@ test('keeps track of selected sensor ids', () => {
 // Now that you think of it, you should add clear cues for invalid form and/or
 // grey out the submission button. Just add a verify function later and
 // test THAT
-test('submits on click when given required form data', () => {
+test('submits createPlant on click when given required original form data', () => {
   // Types are enforced by the inputs and the server has to validate anyways
   // so just check that we require name and board to submit.
-  const spyMutate = jest.fn().mockImplementation(async () => Promise.resolve());
-  const modal = mount(<AddPlantModal boardsData={testData} mutate={spyMutate} handleCloseModal={noop}/>);
+  const spyAddPlant = jest.fn().mockImplementation(async () => Promise.resolve());
+  const modal = mount(<AddPlantModal boardsData={testBoards} createPlant={spyAddPlant} handleCloseModal={noop}/>);
   const submitButton = modal.find('.js-submit-form');
   submitButton.simulate('click');
-  expect(spyMutate).not.toHaveBeenCalled();
+  expect(spyAddPlant).not.toHaveBeenCalled();
   modal.setState({ name: 'foo'});
   submitButton.simulate('click');
-  expect(spyMutate).not.toHaveBeenCalled();
+  expect(spyAddPlant).not.toHaveBeenCalled();
   modal.setState({ name: '', selectedBoardId: null });
   submitButton.simulate('click');
-  expect(spyMutate).not.toHaveBeenCalled();
-  modal.setState({ name: 'foo', selectedBoardId: 'testDataId' });
+  expect(spyAddPlant).not.toHaveBeenCalled();
+  modal.setState({ name: 'foo', selectedBoardId: 'testBoardId' });
   submitButton.simulate('click');
-  expect(spyMutate).toHaveBeenCalled();
+  expect(spyAddPlant).toHaveBeenCalled();
 });
 
 // Note: This is the only test that has to be async, since it's the only test in which
 // axios.post (which handleFormSubmit awaits) is called.
-test('uploads thumbnail on form submission when a thumbnail is provided', async () => {
+test('uploads thumbnail on plant creation when a thumbnail is provided', async () => {
   const spyAxios = () => null;
   spyAxios.post = jest.fn().mockImplementation(async () => Promise.resolve({ data: 'url/img.jpg' }));
-  const spyMutate = jest.fn().mockImplementation(async () => Promise.resolve());
-  const modal = mount(<AddPlantModal boardsData={testData} axios={spyAxios}
-                                     mutate={spyMutate} handleCloseModal={noop} />);
-  modal.setState({ name: 'foo', selectedBoardId: 'testDataId', imageData: 'img.jpg' });
+  const spyCreatePlant = jest.fn().mockImplementation(async () => Promise.resolve());
+  const modal = mount(<AddPlantModal boardsData={testBoards} axios={spyAxios}
+                                     createPlant={spyCreatePlant} handleCloseModal={noop} />);
+  modal.setState({ name: 'foo', selectedBoardId: 'testBoardId', imageData: 'img.jpg' });
   modal.find('.js-submit-form').simulate('click');
   await asyncNoop();
   expect(spyAxios.post).toHaveBeenCalled();
-  expect(spyMutate).toHaveBeenCalled();
-  expect(spyMutate.mock.calls[0][0]).toEqual(expect.objectContaining({
+  expect(spyCreatePlant).toHaveBeenCalled();
+  expect(spyCreatePlant.mock.calls[0][0]).toEqual(expect.objectContaining({
     variables: expect.objectContaining({
       name: 'foo',
-      board: 'testDataId',
+      board: 'testBoardId',
       thumbnail: 'url/img.jpg'
     })
   }));
 });
 
-test('closes after submission', () => {
+test('closes after submission', async () => {
   const mockClose = jest.fn();
-  const modal = mount(<AddPlantModal boardsData={testData} mutate={noop} handleCloseModal={mockClose} />);
-  modal.setState({ name: 'foo', selectedBoardId: 'testDataId' });
+  const modal = mount(<AddPlantModal boardsData={testBoards} createPlant={noop} handleCloseModal={mockClose} />);
+  modal.setState({ name: 'foo', selectedBoardId: 'testBoardId' });
   modal.find('.js-submit-form').simulate('click');
+  await asyncNoop();
   expect(mockClose).toHaveBeenCalled();
+});
+
+///////////////////////////
+///// EDIT MODE TESTS /////
+///////////////////////////
+
+test('populates form input with preexisting data if editing a plant', () => {
+  const modal = mount(<AddPlantModal boardsData={testBoards} plantsData={testPlants} target={testTarget} />);
+  expect(modal.state()).toEqual(expect.objectContaining({
+    name: 'Test Target Plant',
+    selectedBoardId: 'testBoardId',
+    altName: 'testTargetAltName',
+    notes: 'testTargetNotes',
+    selectedSensors: expect.objectContaining({
+      'sensor1Id': true,
+      'sensor2Id': true
+    })
+  }));
+});
+
+test('calls updatePlant on click when given updated form data', async () => {
+  const spyUpdatePlant = jest.fn();
+  const modal = mount(<AddPlantModal boardsData={testBoards} plantsData={testPlants} target={testTarget} updatePlant={spyUpdatePlant} handleCloseModal={noop} />);
+  modal.find('.js-submit-form').simulate('click');
+  expect(spyUpdatePlant).toHaveBeenCalled();
+  expect(spyUpdatePlant.mock.calls[0][0]).toEqual(expect.objectContaining({
+    variables: expect.objectContaining({
+      _id: 'testTargetId',
+      name: 'Test Target Plant',
+      board: 'testBoardId',
+      thumbnail: '',
+      altName: 'testTargetAltName',
+      notes: 'testTargetNotes',
+      sensors: ['sensor1Id', 'sensor2Id']
+    })
+  }));
+});
+
+test('uploads thumbnail on plant update when a new thumbnail is provided', async () => {
+
+});
+
+test('requests deletion of original thumbnail when a new thumbnail is set', async () => {
+
+});
+
+test('confirms deletion before allowing delete', async () => {
+
+});
+
+test('submits deletePlant when delete button is clicked', async () => {
+
 });
