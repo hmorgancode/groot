@@ -32,6 +32,7 @@ function createAddPlantModal(Modal) {
       if (!props.target) {
         this.state = {
           requestInProgress: false,
+          confirmingDelete: false,
           // Required:
           name: '',
           selectedBoardId: null,
@@ -53,6 +54,7 @@ function createAddPlantModal(Modal) {
       const selectedSensors = targetPlant.sensors.reduce((obj, sensor) => { obj[sensor._id] = true; return obj; }, {});
       this.state = {
         requestInProgress: false,
+        confirmingDelete: false,
         name: targetPlant.name,
         selectedBoardId: targetPlant.board._id,
         altName: targetPlant.altName,
@@ -102,7 +104,7 @@ function createAddPlantModal(Modal) {
       const selectedBoard = this.getSelectedBoard();
       // do graphQL mutation!
       // await? for now just call this async function then close immediately
-      await this.props.createPlant({
+      this.props.createPlant({
         variables: {
           name: this.state.name,
           altName: this.state.altName,
@@ -143,8 +145,8 @@ function createAddPlantModal(Modal) {
       });
     }
 
-    handleUpdatePlant = async () => {
-      await this.props.updatePlant({
+    handleUpdatePlant = () => {
+      this.props.updatePlant({
         variables: {
           _id: this.props.target,
           name: this.state.name,
@@ -159,8 +161,27 @@ function createAddPlantModal(Modal) {
       });
     }
 
+    handleDeletePlant = () => {
+      if (!this.state.confirmingDelete) {
+        this.setState({ confirmingDelete: true });
+        return;
+      }
+      this.props.deletePlant({
+        variables: {
+          _id: this.props.target
+        },
+        update: (store, { data: { deletePlant } }) => {
+          const data = store.readQuery({ query: PlantsQuery });
+          const removeIndex = data.plants.findIndex((plant) => plant._id === deletePlant._id);
+          data.plants.splice(removeIndex, 1);
+          store.writeQuery({ query: PlantsQuery, data });
+        }
+      });
+      this.setState({ confirmingDelete: false });
+      this.props.handleCloseModal();
+    }
+
     getSelectedBoard = () => {
-      // debugger;
       return this.props.boardsData.boards.find((board) => board._id === this.state.selectedBoardId);
     }
 
@@ -267,6 +288,13 @@ function createAddPlantModal(Modal) {
             <p className="control">
               <button className="button js-cancel-button" onClick={this.props.handleCloseModal}>Cancel</button>
             </p>
+            { this.props.target &&
+              <p className="control">
+                <button className="button is-danger js-delete-button" onClick={this.handleDeletePlant}>
+                  {this.state.confirmingDelete ? 'Confirm Deletion' : 'Delete'}
+                </button>
+              </p>
+            }
           </div>
           }
         />

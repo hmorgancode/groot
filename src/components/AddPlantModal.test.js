@@ -224,17 +224,54 @@ test('calls updatePlant on click when given updated form data', async () => {
 });
 
 test('uploads thumbnail on plant update when a new thumbnail is provided', async () => {
-
+  const spyUpdatePlant = jest.fn().mockImplementation(async () => Promise.resolve());
+  const spyAxios = () => null;
+  spyAxios.post = jest.fn().mockImplementation(async () => Promise.resolve({ data: 'url/img.jpg' }));
+  const modal = mount(<AddPlantModal boardsData={testBoards} plantsData={testPlants}
+    target={testTarget} updatePlant={spyUpdatePlant} axios={spyAxios} handleCloseModal={noop} />);
+  modal.setState({ imageData: 'img.jpg' });
+  modal.find('.js-submit-form').simulate('click');
+  await asyncNoop();
+  expect(spyAxios.post).toHaveBeenCalled();
+  expect(spyUpdatePlant).toHaveBeenCalled();
+  expect(spyUpdatePlant.mock.calls[0][0]).toEqual(expect.objectContaining({
+    variables: expect.objectContaining({
+      name: 'Test Target Plant',
+      board: 'testBoardId',
+      thumbnail: 'url/img.jpg'
+    })
+  }));
 });
 
-test('requests deletion of original thumbnail when a new thumbnail is set', async () => {
+// test('requests deletion of original thumbnail when a new thumbnail is set', async () => {
 
+// });
+
+test('only shows delete button when editing an existing plant', () => {
+  let modal = mount(<AddPlantModal boardsData={testBoards} />);
+  expect(modal.find('.js-delete-button').length).toBe(0);
+  modal = mount(<AddPlantModal target={testTarget} boardsData={testBoards} plantsData={testPlants} />);
+  expect(modal.find('.js-delete-button').length).toBe(1);
 });
 
-test('confirms deletion before allowing delete', async () => {
-
+test('submits deletePlant when delete button is clicked twice', () => {
+  const spyDeletePlant = jest.fn();
+  const modal = mount(<AddPlantModal target={testTarget} plantsData={testPlants} boardsData={testBoards} deletePlant={spyDeletePlant} handleCloseModal={noop} />);
+  expect(modal.state().confirmingDelete).toBe(false);
+  const deleteButton = modal.find('.js-delete-button');
+  deleteButton.simulate('click');
+  expect(spyDeletePlant).not.toHaveBeenCalled();
+  expect(modal.state().confirmingDelete).toBe(true);
+  deleteButton.simulate('click');
+  expect(spyDeletePlant).toHaveBeenCalled();
+  expect(modal.state().confirmingDelete).toBe(false);
 });
 
-test('submits deletePlant when delete button is clicked', async () => {
-
+test('closes modal after plant deletion', () => {
+  const spyCloseModal = jest.fn();
+  const modal = mount(<AddPlantModal target={testTarget} plantsData={testPlants} boardsData={testBoards} deletePlant={noop} handleCloseModal={spyCloseModal} />);
+  const deleteButton = modal.find('.js-delete-button');
+  deleteButton.simulate('click');
+  deleteButton.simulate('click');
+  expect(spyCloseModal).toHaveBeenCalled();
 });

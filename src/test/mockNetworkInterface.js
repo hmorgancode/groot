@@ -229,9 +229,8 @@ const mocks = {
       obj._id = faker.random.uuid();
       return obj;
     },
-    updatePlant: (root, obj) => {
-      return obj;
-    }
+    updatePlant: (root, obj) => obj,
+    deletePlant: (root, obj) => obj
   })
   // you query createPlant, and the response isn't using your vanilla query resolvers,
   // it's just doing wtf
