@@ -20,8 +20,16 @@ class Plant extends React.Component {
     isEditing: PropTypes.bool.isRequired
   }
 
-  state = {
-    expanded: false
+    // return boardIds[Math.floor(Math.random() * boardIds.length)];
+  constructor(props) {
+    super(props);
+    this.state = {
+      expanded: false,
+      waterLevel: (Math.random() * 3).toFixed(2),
+      moistureLevel: Math.floor(Math.random() * 1023),
+      light: Math.floor(Math.random() * 1023)
+    }
+
   }
 
   expandBox = () => {
@@ -35,6 +43,8 @@ class Plant extends React.Component {
   }
 
   render() {
+
+
     return (
       <article key={ this.props._id } className="js-plant media box" onClick={ this.expandBox }>
         <div className="media-left">
@@ -58,7 +68,17 @@ class Plant extends React.Component {
           </div>
 
           <Collapse isOpened={ this.state.expanded } springConfig={ presets.stiff } >
-            { /* For now- just cut off any instruction set that gets too long. */ }
+
+            <div className="plant-status">
+              { /* this.props.sensors.map(sensor => <div>{sensor.type}</div>) */}
+              <span className="tag">Water Level - {this.state.waterLevel}cm</span>
+              <progress className="progress is-link" value={`${Math.floor(this.state.waterLevel * 100 / 3)}`} max="100"></progress>
+              <span className="tag">Soil Moisture - {this.state.moistureLevel}</span>
+              <progress className="progress is-info" value={`${this.state.moistureLevel}`} max="1023"></progress>
+              <span className="tag">Light - {this.state.light}</span>
+              <progress className="progress is-warning" value={`${this.state.light}`} max="1023"></progress>
+            </div>
+
             <div className="plant-description">
               <p>{ this.props.notes }</p>
             </div>
