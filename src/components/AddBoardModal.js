@@ -15,9 +15,16 @@ function createAddBoardModal(Modal) {
   return class AddBoardModal extends React.Component {
 
     static propTypes = {
-      mutate: PropTypes.func.isRequired,
+      createBoard: PropTypes.func.isRequired,
+      updateBoard: PropTypes.func.isRequired,
+      deleteBoard: PropTypes.func.isRequired,
       handleCloseModal: PropTypes.func.isRequired,
-      axios: PropTypes.func.isRequired
+      axios: PropTypes.func.isRequired,
+      // ID of the board to populate the form with (if this isn't a new board)
+      target: PropTypes.string,
+      boardsData: PropTypes.shape({
+        boards: PropTypes.array.isRequired
+      }).isRequired,
     }
 
     // Shim so that we can provide a substitute during unit testing.
@@ -26,14 +33,34 @@ function createAddBoardModal(Modal) {
       // we also shim in mutate during testing, but that's provided by Apollo
     }
 
-    state = {
-      // Required:
-      location: '',
-      // Optional:
-      type: '',
-      isRemote: false,
-      imageName: '',
-      imageData: null
+    // Set default state depending on whether or not the form should
+    // be populated with an existing board's data
+    constructor(props) {
+      super(props);
+      this.state = {
+        requestInProgress: false,
+        confirmingDelete: false,
+        // Required:
+        location: '',
+        // Optional:
+        type: '',
+        isRemote: false,
+        imageName: '',
+        imageData: null,
+        uploadedImageName: '',
+      }
+      if (!props.target) {
+        return;
+      }
+      // Populate using the existing board's data:
+      const targetBoard = props.boardsData.boards.find((board) => board._id === props.target);
+      this.state = {
+        ...this.state,
+        location: targetBoard.location,
+        type: targetBoard.type,
+        isRemote: targetBoard.isRemote,
+        // sensors: targetBoard.sensors,
+      }
     }
 
     handleSelectImage = (e) => {
@@ -46,29 +73,46 @@ function createAddBoardModal(Modal) {
     }
 
     // Upload the image (if provided) and submit the board's data
-    handleFormSubmit = async (e) => {
+    handleFormSubmit = async () => {
       if (this.state.location === '') {
         return;
       }
 
-      let uploadedImageName = '';
+      // @TODO add progress indicator at some point
+      this.setState({ requestInProgress: true });
+
       if (this.state.imageData) {
-        try {
-          const res = await this.props.axios.post('http://localhost:3000/image_upload', this.state.imageData);
-          uploadedImageName = res.data;
-        } catch (error) {
-          this.setState({ error });
-          console.error('An error occurred while uploading the thumbnail image.');
-          return;
-        }
+        await this.handleUploadImage();
       }
 
-      this.props.mutate({
+      if (this.props.target) {
+        await this.handleUpdateBoard();
+      } else {
+        await this.handleCreateBoard();
+      }
+
+      this.setState({ requestInProgress: false });
+      this.props.handleCloseModal();
+    }
+
+    handleUploadImage = async (e) => {
+      try {
+        const res = await this.props.axios.post('http://localhost:3000/image_upload', this.state.imageData);
+        this.setState({ uploadedImageName: res.data });
+      } catch (error) {
+        this.setState({ error });
+        console.error('An error occurred while uploading the thumbnail image.');
+      }
+    }
+
+    // Upload the image (if provided) and submit the board's data
+    handleCreateBoard = async (e) => {
+      await this.props.createBoard({
         variables: {
           location: this.state.location,
           type: this.state.type,
           isRemote: this.state.isRemote,
-          thumbnail: uploadedImageName
+          thumbnail: this.state.uploadedImageName
         },
         update: (store, { data: { createBoard } })=> {
           const data = store.readQuery({ query: BoardsQuery });
@@ -76,7 +120,37 @@ function createAddBoardModal(Modal) {
           store.writeQuery({ query: BoardsQuery, data });
         }
       });
+    }
 
+    handleUpdateBoard = async () => {
+      await this.props.updateBoard({
+        variables: {
+          _id: this.props.target,
+          location: this.state.location,
+          type: this.state.type,
+          isRemote: this.state.isRemote,
+          thumbnail: this.state.uploadedImageName
+        }
+      });
+    }
+
+    handleDeleteBoard = () => {
+      if (!this.state.confirmingDelete) {
+        this.setState({ confirmingDelete: true });
+        return;
+      }
+      this.props.deleteBoard({
+        variables: {
+          _id: this.props.target
+        },
+        update: (store, { data: { deleteBoard } }) => {
+          const data = store.readQuery({ query: BoardsQuery });
+          const removeIndex = data.boards.findIndex((board) => board._id === deleteBoard._id);
+          data.boards.splice(removeIndex, 1);
+          store.writeQuery({ query: BoardsQuery, data });
+        }
+      });
+      this.setState({ confirmingDelete: false });
       this.props.handleCloseModal();
     }
 
@@ -128,6 +202,13 @@ function createAddBoardModal(Modal) {
             <p className="control">
               <button className="button js-cancel-button" onClick={this.props.handleCloseModal}>Cancel</button>
             </p>
+            { this.props.target &&
+              <p className="control">
+                <button className="button is-danger js-delete-button" onClick={this.handleDeleteBoard}>
+                  {this.state.confirmingDelete ? 'Confirm Deletion' : 'Delete'}
+                </button>
+              </p>
+            }
           </div>
         }
         />
@@ -137,8 +218,8 @@ function createAddBoardModal(Modal) {
 }
 
 
-const addBoardMutation = gql`
-  mutation addBoard(
+const createBoardMutation = gql`
+  mutation createBoard(
     $location: String!,
     $type: String,
     $isRemote: Boolean,
@@ -164,9 +245,56 @@ const addBoardMutation = gql`
   }
 `;
 
+
+const updateBoardMutation = gql`
+  mutation updateBoard(
+    $_id: ID!,
+    $location: String!,
+    $type: String,
+    $isRemote: Boolean,
+    $thumbnail: String,
+    $sensors: [ID!]
+    ) {
+    updateBoard(
+      _id: $_id,
+      location: $location,
+      type: $type,
+      isRemote: $isRemote,
+      thumbnail: $thumbnail,
+      sensors: $sensors
+      ) {
+        _id
+        location
+        type
+        isRemote
+        thumbnail
+        sensors {
+          _id
+          dataPin
+          type
+        }
+      }
+  }
+`;
+
+const deleteBoardMutation = gql`
+  mutation deleteBoard(
+    $_id: ID!
+  ) {
+    deleteBoard (
+      _id: $_id
+    ) {
+      _id
+    }
+  }
+`;
+
 let AddBoardModal = createAddBoardModal(Modal);
 AddBoardModal = compose(
-  graphql(addBoardMutation),
+  graphql(BoardsQuery, { name: 'boardsData' }),
+  graphql(createBoardMutation, { name: 'createBoard'}),
+  graphql(updateBoardMutation, { name: 'updateBoard'}),
+  graphql(deleteBoardMutation, { name: 'deleteBoard'}),
   connect(
     null, // not mapping state to any props in this component
     (dispatch) => ({

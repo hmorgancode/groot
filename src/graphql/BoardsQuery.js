@@ -5,6 +5,8 @@ const BoardListQuery = gql`
     boards {
       _id
       location
+      type
+      isRemote
       thumbnail
       sensors {
         _id

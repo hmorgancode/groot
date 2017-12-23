@@ -13,7 +13,7 @@ function BoardList ( { data: { error, loading, boards }}) {
   }
   return (
     <div className="list">
-      { boards.map((board) => <Board key={board._id} {...board} />) }
+      { boards && boards.map((board) => <Board key={board._id} {...board} />) }
     </div>
   );
 }

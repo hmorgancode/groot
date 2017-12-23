@@ -2,6 +2,7 @@ import React from 'react';
 import { Collapse } from 'react-collapse';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { openModal } from '../redux/actionTypes';
 
 class Board extends React.Component {
 
@@ -60,7 +61,12 @@ class Board extends React.Component {
 }
 
 const BoardWithState = connect(
-  (state) => ({ isEditing: state.app.isEditing })
+  (state) => ({ isEditing: state.app.isEditing }),
+  (dispatch) => ({
+    openEditModal(_id) {
+      dispatch(openModal('ADD_BOARD', _id));
+    }
+  })
 )(Board);
 
 

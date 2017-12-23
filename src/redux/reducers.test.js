@@ -3,7 +3,6 @@ import { toggleEditMode,
          goToPlants,
          goToBoards,
          openModal,
-         setEditModalTarget,
          closeModal } from './actionTypes';
 
 describe('appReducer', () => {

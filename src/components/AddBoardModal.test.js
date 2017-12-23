@@ -10,6 +10,17 @@ const asyncNoop = async () => new Promise((resolve) => {
   }, 0);
 });
 
+const testBoards = {
+  boards: [
+    { _id: 'testBoardId',
+     location: 'testBoardLocation',
+     isRemote: false,
+     type: 'testArduino',
+     sensors: [{ _id: 'sensor1Id' }, { _id: 'sensor2Id' }, { _id: 'sensor3Id' }] }
+  ]
+};
+const testTarget = 'testBoardId';
+
 test('Modal renders', () => {
   mount(<AddBoardModal />);
 });
@@ -58,7 +69,7 @@ test('stores file input in state as a name string and a FormData object', () => 
 
 test('submits on click when given required form data', () => {
   const spy = jest.fn().mockImplementation(() => Promise.resolve());
-  const modal = mount(<AddBoardModal mutate={spy} handleCloseModal={noop} />);
+  const modal = mount(<AddBoardModal createBoard={spy} handleCloseModal={noop} />);
   const submitButton = modal.find('.js-submit-form');
   submitButton.simulate('click');
   expect(spy).not.toHaveBeenCalled();
@@ -71,14 +82,14 @@ test('submits on click when given required form data', () => {
 test(`uploads thumbnail on form submission when a thumbnail is provided`, async () => {
   const spyAxios = () => null;
   spyAxios.post = jest.fn().mockImplementation(() => Promise.resolve({ data: 'url/img.jpg' }));
-  const spyMutate = jest.fn().mockImplementation(async () => Promise.resolve());
-  const modal = mount(<AddBoardModal axios={spyAxios} mutate={spyMutate} handleCloseModal={noop} />);
+  const spyCreateBoard = jest.fn().mockImplementation(async () => Promise.resolve());
+  const modal = mount(<AddBoardModal axios={spyAxios} createBoard={spyCreateBoard} handleCloseModal={noop} />);
   modal.setState({ location: 'foo', imageData: 'img.jpg' });
   modal.find('.js-submit-form').simulate('click');
   await asyncNoop();
   expect(spyAxios.post).toHaveBeenCalled();
-  expect(spyMutate).toHaveBeenCalled();
-  expect(spyMutate.mock.calls[0][0]).toEqual(expect.objectContaining({
+  expect(spyCreateBoard).toHaveBeenCalled();
+  expect(spyCreateBoard.mock.calls[0][0]).toEqual(expect.objectContaining({
     variables: expect.objectContaining({
       location: 'foo',
       thumbnail: 'url/img.jpg'
@@ -86,10 +97,102 @@ test(`uploads thumbnail on form submission when a thumbnail is provided`, async 
   }));
 });
 
-test('closes after submission', () => {
+test.only('closes after submission', async () => {
   const mockClose = jest.fn();
-  const modal = mount(<AddBoardModal handleCloseModal={mockClose} mutate={noop} />);
+  const modal = mount(<AddBoardModal handleCloseModal={mockClose} createBoard={noop} />);
   modal.setState({ location: 'foo' });
   modal.find('.js-submit-form').simulate('click');
+  // okay so there is ABSOLUTELY a better way to do this but
+  await asyncNoop();
   expect(mockClose).toHaveBeenCalled();
+});
+
+
+///////////////////////////
+///// EDIT MODE TESTS /////
+///////////////////////////
+
+test('populates form input with preexisting data if editing a board', () => {
+  const modal = mount(<AddBoardModal boardsData={testBoards} target={testTarget} />);
+  expect(modal.state()).toEqual(expect.objectContaining({
+    location: 'testBoardLocation',
+    isRemote: false,
+    type: 'testArduino',
+    sensors: expect.arrayContaining([
+      expect.objectContaining({ _id: 'sensor1Id' }),
+      expect.objectContaining({ _id: 'sensor2Id' }),
+      expect.objectContaining({ _id: 'sensor3Id' })
+    ])
+  }));
+});
+
+test('calls updateBoard on click when given updated form data', async () => {
+  const spyUpdateBoard = jest.fn();
+  const modal = mount(<AddBoardModal boardsData={testBoards} target={testTarget} updateBoard={spyUpdateBoard} handleCloseModal={noop} />);
+  modal.find('.js-submit-form').simulate('click');
+  expect(spyUpdateBoard).toHaveBeenCalled();
+  expect(spyUpdateBoard.mock.calls[0][0]).toEqual(expect.objectContaining({
+    variables: expect.objectContaining({
+      _id: 'testBoardId',
+      location: 'testBoardLocation',
+      isRemote: false,
+      type: 'testArduino',
+      // sensors: expect.arrayContaining(['sensor1Id', 'sensor2Id', 'sensor3Id'])
+    })
+  }));
+});
+
+test('uploads thumbnail on board update when a new thumbnail is provided', async () => {
+  const spyUpdateBoard = jest.fn().mockImplementation(async () => Promise.resolve());
+  const spyAxios = () => null;
+  spyAxios.post = jest.fn().mockImplementation(async () => Promise.resolve({ data: 'url/img.jpg' }));
+  const modal = mount(<AddBoardModal boardsData={testBoards}
+    target={testTarget} updateBoard={spyUpdateBoard} axios={spyAxios} handleCloseModal={noop} />);
+  modal.setState({ imageData: 'img.jpg' });
+  modal.find('.js-submit-form').simulate('click');
+  await asyncNoop();
+  expect(spyAxios.post).toHaveBeenCalled();
+  expect(spyUpdateBoard).toHaveBeenCalled();
+  expect(spyUpdateBoard.mock.calls[0][0]).toEqual(expect.objectContaining({
+    variables: expect.objectContaining({
+      _id: 'testBoardId',
+      location: 'testBoardLocation',
+      isRemote: false,
+      type: 'testArduino',
+      thumbnail: 'url/img.jpg'
+    })
+  }));
+});
+
+// test('requests deletion of original thumbnail when a new thumbnail is set', async () => {
+
+// });
+
+test('only shows delete button when editing an existing board', () => {
+  let modal = mount(<AddBoardModal boardsData={testBoards} />);
+  expect(modal.find('.js-delete-button').length).toBe(0);
+  modal = mount(<AddBoardModal target={testTarget} boardsData={testBoards} />);
+  expect(modal.find('.js-delete-button').length).toBe(1);
+});
+
+test('submits deleteBoard when delete button is clicked twice', () => {
+  const spyDeleteBoard = jest.fn();
+  const modal = mount(<AddBoardModal target={testTarget} boardsData={testBoards} deleteBoard={spyDeleteBoard} handleCloseModal={noop} />);
+  expect(modal.state().confirmingDelete).toBe(false);
+  const deleteButton = modal.find('.js-delete-button');
+  deleteButton.simulate('click');
+  expect(spyDeleteBoard).not.toHaveBeenCalled();
+  expect(modal.state().confirmingDelete).toBe(true);
+  deleteButton.simulate('click');
+  expect(spyDeleteBoard).toHaveBeenCalled();
+  expect(modal.state().confirmingDelete).toBe(false);
+});
+
+test('closes modal after plant deletion', () => {
+  const spyCloseModal = jest.fn();
+  const modal = mount(<AddBoardModal target={testTarget} boardsData={testBoards} deleteBoard={noop} handleCloseModal={spyCloseModal} />);
+  const deleteButton = modal.find('.js-delete-button');
+  deleteButton.simulate('click');
+  deleteButton.simulate('click');
+  expect(spyCloseModal).toHaveBeenCalled();
 });

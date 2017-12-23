@@ -137,7 +137,7 @@ test('keeps track of selected sensor ids', () => {
 // Now that you think of it, you should add clear cues for invalid form and/or
 // grey out the submission button. Just add a verify function later and
 // test THAT
-test('submits createPlant on click when given required original form data', () => {
+test('submits createPlant on click when given required original form data', async () => {
   // Types are enforced by the inputs and the server has to validate anyways
   // so just check that we require name and board to submit.
   const spyAddPlant = jest.fn().mockImplementation(async () => Promise.resolve());
@@ -153,6 +153,7 @@ test('submits createPlant on click when given required original form data', () =
   expect(spyAddPlant).not.toHaveBeenCalled();
   modal.setState({ name: 'foo', selectedBoardId: 'testBoardId' });
   submitButton.simulate('click');
+  await asyncNoop();
   expect(spyAddPlant).toHaveBeenCalled();
 });
 

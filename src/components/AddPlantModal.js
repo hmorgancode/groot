@@ -13,10 +13,17 @@ function createAddPlantModal(Modal) {
     static propTypes = {
       createPlant: PropTypes.func.isRequired,
       updatePlant: PropTypes.func.isRequired,
+      deletePlant: PropTypes.func.isRequired,
       handleCloseModal: PropTypes.func.isRequired,
       axios: PropTypes.func.isRequired,
       // ID of the plant to populate the form with (if this isn't a new plant)
-      target: PropTypes.string
+      target: PropTypes.string,
+      plantsData: PropTypes.shape({
+        plants: PropTypes.array.isRequired
+      }).isRequired,
+      boardsData: PropTypes.shape({
+        boards: PropTypes.array.isRequired
+      }).isRequired,
     }
 
     // Shim so that we can provide a substitute during unit testing.
@@ -89,14 +96,12 @@ function createAddPlantModal(Modal) {
     }
 
     handleUploadImage = async () => {
-      if (this.state.imageData) {
-        try {
-          const res = await this.props.axios.post('http://localhost:3000/image_upload', this.state.imageData);
-          this.setState({ uploadedImageName: res.data });
-        } catch (error) {
-          this.setState({ error });
-          console.error('An error occurred while uploading the thumbnail image.');
-        }
+      try {
+        const res = await this.props.axios.post('http://localhost:3000/image_upload', this.state.imageData);
+        this.setState({ uploadedImageName: res.data });
+      } catch (error) {
+        this.setState({ error });
+        console.error('An error occurred while uploading the thumbnail image.');
       }
     }
 
