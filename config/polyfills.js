@@ -9,6 +9,9 @@ if (typeof Promise === 'undefined') {
 // fetch() polyfill for making API calls.
 require('whatwg-fetch');
 
+// So we can use Object.entries, etc...
+require('babel-polyfill');
+
 // Object.assign() is commonly used with React.
 // It will use the native implementation if it's present and isn't buggy.
 Object.assign = require('object-assign');
@@ -32,3 +35,5 @@ console.error = function() {
   }
   return error.apply(console, arguments);
 };
+
+//

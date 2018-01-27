@@ -10,6 +10,7 @@
     "babel-eslint": "7.1.1",
     "babel-jest": "18.0.0",
     "babel-loader": "6.2.10",
+    "babel-preset-env": "^1.6.1",
     "babel-preset-react-app": "^2.1.0",
     "babel-runtime": "^6.20.0",
     "case-sensitive-paths-webpack-plugin": "1.1.4",
@@ -37,6 +38,7 @@
     "html-webpack-plugin": "2.24.0",
     "http-proxy-middleware": "0.17.3",
     "jest": "^21.2.1",
+    "jest-enzyme": "^4.0.2",
     "json-loader": "0.5.4",
     "node-sass": "^4.5.0",
     "object-assign": "4.1.1",
@@ -55,6 +57,7 @@
   },
   "dependencies": {
     "axios": "^0.16.2",
+    "babel-polyfill": "^6.26.0",
     "bulma": "^0.6.0",
     "faker": "^4.1.0",
     "font-awesome": "^4.7.0",
@@ -82,10 +85,11 @@
       "<rootDir>/config/polyfills.js",
       "<rootDir>/config/enzyme/adapter.js"
     ],
+    "setupTestFrameworkScriptFile": "<rootDir>/config/jestSetup.js",
     "testPathIgnorePatterns": [
       "<rootDir>[/\\\\](build|docs|node_modules|scripts)[/\\\\]"
     ],
-    "testEnvironment": "node",
+    "testEnvironment": "jsdom",
     "testURL": "http://localhost",
     "transform": {
       "^.+\\.(js|jsx)$": "<rootDir>/node_modules/babel-jest",
@@ -101,6 +105,7 @@
   },
   "babel": {
     "presets": [
+      "env",
       "react-app"
     ]
   },

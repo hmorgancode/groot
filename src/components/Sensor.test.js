@@ -1,0 +1,106 @@
+import React from 'react';
+import * as Enzyme from 'enzyme';
+import { SensorWithoutState as Sensor } from './Sensor';
+
+describe('Sensor', () => {
+  const defaultProps = {};
+  let wrapper;
+  function createWrapper(overrideProps = {}, method = 'shallow') {
+    const props = { ...defaultProps, ...overrideProps };
+    return Enzyme[method](<Sensor {...props} />);
+  }
+
+  describe('in all cases', () => {
+    beforeEach(() => {
+      wrapper = createWrapper();
+    });
+    it('keeps state authoritative over input', () => {
+      const newState = {
+        type: 'Humidity',
+        dataPin: 2,
+        powerPin: 2,
+      };
+      wrapper.instance().setState(newState);
+      expect(wrapper.find('.js-type')).toHaveValue('Humidity');
+      expect(wrapper.find('.js-data-pin')).toHaveValue(2);
+      expect(wrapper.find('.js-power-pin')).toHaveValue(2);
+    });
+    it('updates state in response to input of type, powerPin, and dataPin', () => {
+      wrapper.find('.js-type').simulate('change', { target: { value: 'Humidity' } });
+      expect(wrapper.state('type')).toBe('Humidity');
+      wrapper.find('.js-data-pin').simulate('change', { target: { value: 2 } });
+      expect(wrapper.state('dataPin')).toBe(2);
+      wrapper.find('.js-power-pin').simulate('change', { target: { value: 2 } });
+      expect(wrapper.state('powerPin')).toBe('2');
+    });
+  });
+
+  describe('new sensor mode', () => {
+    describe('create new sensor button', () => {
+      const newSensorInfo = {
+          type: 'a non-zero-length string',
+          dataPin: 1,
+          powerPin: 1,
+      };
+      it('should display when input is valid', () => {
+        wrapper = createWrapper();
+        expect(wrapper.find('.js-create-sensor')).toBeUndefined();
+        wrapper.setState(newSensorInfo);
+        expect(wrapper.find('.js-create-sensor')).toBePresent();
+      });
+      it('should submit a mutation to create a new sensor', () => {
+        wrapper = createWrapper({ createSensor: jest.fn() });
+        wrapper.setState(newSensorInfo);
+        wrapper.find('.js-create-sensor').simulate('click');
+        expect(wrapper.prop('createSensor')).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('edit mode', () => {
+    const existingSensorProps = {
+      _id: 'testId',
+      type: 'Moisture',
+      dataPin: 1,
+      powerPin: 1,
+      updateSensor: jest.fn(),
+    };
+    beforeEach(() => {
+      wrapper = createWrapper(existingSensorProps);
+    });
+    it('populates state from props', () => {
+      expect(wrapper.find('.js-type')).toHaveValue('Moisture');
+      expect(wrapper.find('.js-data-pin')).toHaveValue(1);
+      expect(wrapper.find('.js-power-pin')).toHaveValue(1);
+    });
+    // In response to a mutation, Sensor's props should change.
+    // The state should line up with the props regardless (because the mutation
+    // was defined by the Sensor's state), but let's be certain in case of
+    // server-side changes like max length, removing padding, etc...
+    it('updates state whenever props change', () => {
+      wrapper.setProps({
+        type: 'Water Level',
+        dataPin: 5,
+        powerPin: 5,
+      });
+      expect(wrapper.state()).toEqual({
+        _id: 'testId',
+        type: 'Water Level',
+        dataPin: 5,
+        powerPin: 5,
+      })
+    });
+
+    describe('Save Changes button', () => {
+      it('only shows when state differs from props', () => {
+        expect(wrapper.find('.js-save-changes')).toBeUndefined();
+        wrapper.setState({ type: 'something else' });
+        expect(wrapper.find('.js-save-changes')).toBePresent();
+      });
+      it('submits a mutation to update the sensor when clicked', () => {
+        wrapper.find('.js-save-changes').simulate('click');
+        expect(wrapper.prop('updateSensor')).toHaveBeenCalled();
+      });
+    });
+  });
+});

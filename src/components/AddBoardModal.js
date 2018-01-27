@@ -6,6 +6,7 @@ import { gql, graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
 import { closeModal } from '../redux/actionTypes';
 import PropTypes from 'prop-types';
+import { SensorWithState as Sensor } from './Sensor';
 
 function createAddBoardModal(Modal) {
   /**
@@ -59,7 +60,7 @@ function createAddBoardModal(Modal) {
         location: targetBoard.location,
         type: targetBoard.type,
         isRemote: targetBoard.isRemote,
-        // sensors: targetBoard.sensors,
+        sensors: targetBoard.sensors,
       }
     }
 
@@ -154,6 +155,13 @@ function createAddBoardModal(Modal) {
       this.props.handleCloseModal();
     }
 
+    renderSensorList = () => (
+      <div className="control js-sensors-list">
+        <label className="label">Sensors</label>
+        {this.state.sensors.map((sensor) => <Sensor {...sensor} />)}
+      </div>
+    )
+
     render() {
       return (
         <Modal title="Add Board"
@@ -191,6 +199,9 @@ function createAddBoardModal(Modal) {
                        onChange={ this.handleSelectImage }/>
               }
             </div>
+
+            {this.props.target && this.renderSensorList()}
+
           </div>
         }
 
@@ -238,8 +249,9 @@ const createBoardMutation = gql`
         thumbnail
         sensors {
           _id
-          dataPin
           type
+          dataPin
+          powerPin
         }
       }
   }
@@ -270,8 +282,9 @@ const updateBoardMutation = gql`
         thumbnail
         sensors {
           _id
-          dataPin
           type
+          dataPin
+          powerPin
         }
       }
   }

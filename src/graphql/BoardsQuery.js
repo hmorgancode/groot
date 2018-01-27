@@ -10,8 +10,9 @@ const BoardListQuery = gql`
       thumbnail
       sensors {
         _id
-        dataPin
         type
+        dataPin
+        powerPin
       }
     }
   }

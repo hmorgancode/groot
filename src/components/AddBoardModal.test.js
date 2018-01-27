@@ -13,10 +13,25 @@ const asyncNoop = async () => new Promise((resolve) => {
 const testBoards = {
   boards: [
     { _id: 'testBoardId',
-     location: 'testBoardLocation',
-     isRemote: false,
-     type: 'testArduino',
-     sensors: [{ _id: 'sensor1Id' }, { _id: 'sensor2Id' }, { _id: 'sensor3Id' }] }
+      location: 'testBoardLocation',
+      isRemote: false,
+      type: 'testArduino',
+      sensors: [{
+        _id: 'sensor1Id',
+        type: 'Moisture',
+        dataPin: 1,
+        powerPin: 1,
+      }, {
+        _id: 'sensor2Id',
+        type: 'Water Level',
+        dataPin: 2,
+        powerPin: 2,
+      }, {
+        _id: 'sensor3Id',
+        type: 'Humidity',
+        dataPin: 3,
+        powerPin: 3,
+      }] }
   ]
 };
 const testTarget = 'testBoardId';
@@ -97,7 +112,7 @@ test(`uploads thumbnail on form submission when a thumbnail is provided`, async 
   }));
 });
 
-test.only('closes after submission', async () => {
+test('closes after submission', async () => {
   const mockClose = jest.fn();
   const modal = mount(<AddBoardModal handleCloseModal={mockClose} createBoard={noop} />);
   modal.setState({ location: 'foo' });
@@ -118,11 +133,7 @@ test('populates form input with preexisting data if editing a board', () => {
     location: 'testBoardLocation',
     isRemote: false,
     type: 'testArduino',
-    sensors: expect.arrayContaining([
-      expect.objectContaining({ _id: 'sensor1Id' }),
-      expect.objectContaining({ _id: 'sensor2Id' }),
-      expect.objectContaining({ _id: 'sensor3Id' })
-    ])
+    sensors: testBoards.boards[0].sensors,
   }));
 });
 
@@ -137,7 +148,7 @@ test('calls updateBoard on click when given updated form data', async () => {
       location: 'testBoardLocation',
       isRemote: false,
       type: 'testArduino',
-      // sensors: expect.arrayContaining(['sensor1Id', 'sensor2Id', 'sensor3Id'])
+      // sensors should not be part of this! each Sensor component can handle its own mutation.
     })
   }));
 });
@@ -195,4 +206,13 @@ test('closes modal after plant deletion', () => {
   deleteButton.simulate('click');
   deleteButton.simulate('click');
   expect(spyCloseModal).toHaveBeenCalled();
+});
+
+describe('sensors panel', () => {
+  it('is only visible in Edit mode', () => {
+    let modal = mount(<AddBoardModal boardsData={testBoards} />);
+    expect(modal.find('.js-sensors-list')).toHaveLength(0);
+    modal = mount(<AddBoardModal target={testTarget} boardsData={testBoards} />);
+    expect(modal.find('.js-sensors-list')).toHaveLength(1);
+  });
 });
