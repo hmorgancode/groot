@@ -157,6 +157,8 @@ function createAddBoardModal(Modal) {
 
     renderSensorList = () => (
       <div className="control js-sensors-list">
+        <label className="label">Create a New Sensor</label>
+        <Sensor />
         <label className="label">Sensors</label>
         {this.state.sensors.map((sensor) => <Sensor {...sensor} />)}
       </div>
