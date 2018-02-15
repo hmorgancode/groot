@@ -6,7 +6,7 @@ import { gql, graphql, compose } from 'react-apollo';
 import { connect } from 'react-redux';
 import { closeModal } from '../redux/actionTypes';
 import PropTypes from 'prop-types';
-import { SensorWithState as Sensor } from './Sensor';
+import { Sensor } from './Sensor';
 
 function createAddBoardModal(Modal) {
   /**
@@ -155,14 +155,19 @@ function createAddBoardModal(Modal) {
       this.props.handleCloseModal();
     }
 
-    renderSensorList = () => (
-      <div className="control js-sensors-list">
-        <label className="label">Create a New Sensor</label>
-        <Sensor />
-        <label className="label">Sensors</label>
-        {this.state.sensors.map((sensor) => <Sensor {...sensor} />)}
-      </div>
-    )
+    renderSensorList = () => {
+      if (!this.props.target) {
+        return null;
+      }
+      return (
+        <div className="control js-sensors-list">
+          <label className="label">Create a New Sensor</label>
+          <Sensor board={this.props.target} />
+          <label className="label">Sensors</label>
+          {this.state.sensors.map((sensor) => <Sensor key={sensor._id} board={this.props.target} {...sensor} />)}
+        </div>
+      );
+    }
 
     render() {
       return (
@@ -202,7 +207,7 @@ function createAddBoardModal(Modal) {
               }
             </div>
 
-            {this.props.target && this.renderSensorList()}
+            {this.renderSensorList()}
 
           </div>
         }

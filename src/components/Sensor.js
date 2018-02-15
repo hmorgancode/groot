@@ -1,12 +1,12 @@
 import React from 'react';
 import { gql, graphql, compose } from 'react-apollo';
-import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 class Sensor extends React.Component {
   static propTypes = {
     _id: PropTypes.string,
     type: PropTypes.string,
+    board: PropTypes.string.isRequired,
     dataPin: PropTypes.number,
     powerPin: PropTypes.number,
     createSensor: PropTypes.func.isRequired,
@@ -17,8 +17,8 @@ class Sensor extends React.Component {
   static defaultProps = {
     _id: null,
     type: '',
-    dataPin: null,
-    powerPin: null,
+    dataPin: undefined,
+    powerPin: undefined,
   };
 
   state = {
@@ -34,21 +34,53 @@ class Sensor extends React.Component {
     this.setState({ _id, type, dataPin, powerPin });
   }
 
-  handleCreateSensor = () => {
-    this.props.createSensor();
+  handleCreateSensor = async () => {
+    await this.props.createSensor({
+        variables: {
+          type: this.state.type,
+          board: this.props.board,
+          dataPin: this.state.dataPin,
+          powerPin: this.state.powerPin,
+        },
+        update: (store, { data: { createdSensor } }) => {
+          // find this board, and add this to its sensors!
+          // const data = store.readQuery({ query: SensorsQuery });
+          // data.plants.push(createPlant);
+          // store.writeQuery({ query: PlantsQuery, data });
+        }
+      });
   }
 
-  handleUpdateSensor = () => {
-    this.props.updateSensor();
+  handleUpdateSensor = async () => {
+    await this.props.updateSensor({
+      variables: {
+        _id: this.state._id,
+        type: this.state.type,
+        board: this.props.board,
+        dataPin: this.state.dataPin,
+        powerPin: this.state.powerPin,
+      }
+    });
   }
 
-  handleDeleteSensor = () => {
+  handleDeleteSensor = async () => {
     if (!this.state.confirmingDelete) {
       this.setState({ confirmingDelete: true });
       return;
     }
     // this.setState({ confirmingDelete: false }); // necessary?
-    this.props.deleteSensor();
+    await this.props.deleteSensor({
+      variables: {
+        _id: this.props.target
+      },
+      update: (store, { data: { deleteBoard } }) => {
+        // const data = store.readQuery({ query: BoardsQuery });
+        // const removeIndex = data.boards.findIndex((board) => board._id === deleteBoard._id);
+        // data.boards.splice(removeIndex, 1);
+        // store.writeQuery({ query: BoardsQuery, data });
+      }
+    });
+    this.setState({ confirmingDelete: false });
   }
 
   isEditMode = () => {
@@ -137,6 +169,70 @@ class Sensor extends React.Component {
   }
 }
 
+const createSensorMutation = gql`
+  mutation createSensor(
+    $type: String!,
+    $board: ID!,
+    $dataPin: Int!,
+    $powerPin: Int!
+    ) {
+    createSensor(
+      type: $type,
+      board: $board,
+      dataPin: $dataPin,
+      powerPin: $powerPin
+      ) {
+        _id
+        type
+        board
+        dataPin
+        powerPin
+      }
+  }
+`;
 
 
-export { Sensor as SensorWithoutState, Sensor as SensorWithState };
+const updateSensorMutation = gql`
+  mutation updateSensor(
+    $_id: ID!,
+    $type: String,
+    $board: ID,
+    $dataPin: Int,
+    $powerPin: Int
+    ) {
+    updateSensor(
+      _id: $_id,
+      type: $type,
+      board: $board,
+      dataPin: $dataPin,
+      powerPin: $powerPin
+      ) {
+        _id
+        type
+        board
+        dataPin
+        powerPin
+      }
+  }
+`;
+
+const deleteSensorMutation = gql`
+  mutation deleteSensor(
+    $_id: ID!
+  ) {
+    deleteSensor (
+      _id: $_id
+    ) {
+      _id
+    }
+  }
+`;
+
+const SensorWithState = compose(
+  graphql(createSensorMutation, { name: 'createSensor'}),
+  graphql(updateSensorMutation, { name: 'updateSensor'}),
+  graphql(deleteSensorMutation, { name: 'deleteSensor'}),
+)(Sensor);
+
+
+export { Sensor as SensorWithoutState, SensorWithState as Sensor };
